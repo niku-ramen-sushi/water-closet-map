@@ -1,12 +1,15 @@
-import './App.css'
+import { Center, UIProvider } from "@yamada-ui/react";
+import DescriptionsForm from "./components/forms/DescriptionsForm.jsx";
+import "./App.css";
 
 function App() {
-
   return (
-    <>
-      <div></div>
-    </>
-  )
+    <UIProvider>
+      <Center border="1px">
+        <DescriptionsForm />
+      </Center>
+    </UIProvider>
+  );
 }
 
-export default App
+export default App;
