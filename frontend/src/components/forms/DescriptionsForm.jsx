@@ -1,15 +1,29 @@
 import {
   Box,
   FormControl,
-  Input,
+  Heading,
   NativeOption,
   NativeSelect,
+  Radio,
+  RadioGroup,
   Textarea,
   VStack,
 } from "@yamada-ui/react";
+import {
+  isPinEditAtom,
+  pinsAtom,
+  selectedPinIdAtom,
+} from "../../globalState.js";
+import { useAtomValue } from "jotai";
 
 const DescriptionsForm = () => {
-  return (
+  const isPinEdit = useAtomValue(isPinEditAtom);
+  const pins = useAtomValue(pinsAtom);
+  const selectedPinId = useAtomValue(selectedPinIdAtom);
+
+  const pin = pins[selectedPinId];
+
+  return isPinEdit ? (
     <Box
       border="1px solid #ccc"
       borderRadius="8px"
@@ -18,16 +32,26 @@ const DescriptionsForm = () => {
       maxWidth="500px"
     >
       <VStack spacing={2} width="80%">
+        <Heading as="h5" size="md" isTruncated>
+          {pin.title}
+        </Heading>
+
         <FormControl
           isRequired
-          label="場所の名前"
-          errorMessage="場所の名前は必須です"
+          label="種類"
+          errorMessage="種類の選択は必須です"
         >
-          <Input placeholder="例：名古屋駅 スターバックス前" />
-        </FormControl>
-
-        <FormControl label="詳細">
-          <Textarea placeholder="例：綺麗な状態ですが、やや狭いです。"></Textarea>
+          <RadioGroup direction="row" defaultValue={pin.category}>
+            <Radio size="sm" value="男子トイレ">
+              男子トイレ🚹
+            </Radio>
+            <Radio size="sm" value="女子トイレ">
+              女子トイレ🚺
+            </Radio>
+            <Radio size="sm" value="共用トイレ">
+              共用トイレ🚻
+            </Radio>
+          </RadioGroup>
         </FormControl>
 
         <FormControl
@@ -35,7 +59,10 @@ const DescriptionsForm = () => {
           label="衛生レベル"
           errorMessage="衛生レベルの選択は必須です"
         >
-          <NativeSelect placeholder="レベルを選択">
+          <NativeSelect
+            placeholder="レベルを選択"
+            defaultValue={pin.hygieneLevel}
+          >
             <NativeOption value="5">かなり綺麗</NativeOption>
             <NativeOption value="4">綺麗</NativeOption>
             <NativeOption value="3">普通</NativeOption>
@@ -43,8 +70,17 @@ const DescriptionsForm = () => {
             <NativeOption value="1">かなり汚い</NativeOption>
           </NativeSelect>
         </FormControl>
+
+        <FormControl label="詳細">
+          <Textarea
+            placeholder="例：綺麗な状態ですが、やや狭いです。"
+            defaultValue={pin.description}
+          ></Textarea>
+        </FormControl>
       </VStack>
     </Box>
+  ) : (
+    <></>
   );
 };
 
