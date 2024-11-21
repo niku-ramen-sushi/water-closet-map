@@ -9,32 +9,48 @@
 // Use DBML to define your database structure
 // Docs: https://dbml.dbdiagram.io/docs
 
+//Users
 Table users {
-  id int [pk]
+  id int [pk] 
   name varchar(64) [not null]
+  gender varchar(1)
   email varchar(64) [not null, unique]
   password varchar(64) [not null]
   created_at timestamp [not null]
+  latitude decimal
+  longitude decimal
 }
 
-table wc_info {
+//wc info
+table wc_position {
   id int [pk]
-  users_id int
+  user_id int
   title varchar(64) [not null]
-  address varchar(255) [not null]
+  address varchar(255)
+  latitude doubleprecision [not null]
+  longitude doubleprecision [not null]
   comment text
-  hygiene_id int
   created_at timestamp
 }
 
+table wc_description {
+  id int [pk]
+  hygiene_id int
+  wc_pos_id int
+  gender_type_id int
+
+}
+
+//
 table hygiene_info {
   id int [pk]
-  name varchar(64) [not null]
+  name varchar(64)
+
 }
 
 table pictures {
   id int [pk]
-  wc_id int
+  wc_desc_id int
   path_name varchar(255)
 }
 
@@ -44,15 +60,24 @@ table favorite {
   user_id int
 }
 
-Ref: wc_info.hygiene_id > hygiene_info.id [delete: cascade]
+table gender_type {
+  id int [pk]
+  type varchar(8)
+}
 
-Ref: pictures.wc_id > wc_info.id [delete: cascade]
+Ref: wc_description.wc_pos_id > wc_position.id [delete: cascade]
 
-Ref: wc_info.users_id > users.id [delete: cascade]
+Ref: wc_description.hygiene_id > hygiene_info.id [delete: cascade]
+
+Ref: wc_description.gender_type_id > gender_type.id [delete: cascade]
+
+Ref: wc_position.user_id > users.id [delete: cascade]
 
 Ref:favorite.user_id > users.id [delete: cascade]
 
-Ref:favorite.wc_id > wc_info.id [delete: cascade]
+Ref:favorite.wc_id > wc_position.id [delete: cascade]
+
+Ref: pictures.wc_desc_id > wc_description.id [delete: cascade]
 
 ```
 
