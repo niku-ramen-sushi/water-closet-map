@@ -7,7 +7,7 @@ exports.up = function(knex) {
     table.increments("id").primary();
     table.integer("user_id").notNullable();
     table.string("title", 64).notNullable();
-    table.string("address", 255).notNullable();
+    table.string("address", 255);
     table.decimal("latitude",9,7).notNullable();
     table.decimal("longitude",10,7).notNullable();
     table.timestamp("created_at").notNullable();
