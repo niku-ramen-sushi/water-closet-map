@@ -1,9 +1,11 @@
 import {
   Box,
   FormControl,
+  Heading,
   Input,
   NativeOption,
   NativeSelect,
+  Radio,
   Textarea,
   VStack,
 } from "@yamada-ui/react";
@@ -18,12 +20,25 @@ const DescriptionsForm = () => {
       maxWidth="500px"
     >
       <VStack spacing={2} width="80%">
+        <Heading as="h5" size="md" isTruncated>
+          名古屋駅 スターバックス前
+        </Heading>
         <FormControl
           isRequired
           label="場所の名前"
           errorMessage="場所の名前は必須です"
         >
-          <Input placeholder="例：名古屋駅 スターバックス前" />
+          <Input placeholder="" />
+        </FormControl>
+
+        <FormControl
+          isRequired
+          label="種類"
+          errorMessage="種類の選択は必須です"
+        >
+          <Radio size="sm">男子トイレ🚹</Radio>
+          <Radio size="md">女子トイレ🚺</Radio>
+          <Radio size="lg">共用トイレ🚻</Radio>
         </FormControl>
 
         <FormControl label="詳細">

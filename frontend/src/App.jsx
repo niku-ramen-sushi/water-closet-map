@@ -1,13 +1,14 @@
-import { Center, UIProvider } from "@yamada-ui/react";
+import { UIProvider, VStack } from "@yamada-ui/react";
 import DescriptionsForm from "./components/forms/DescriptionsForm.jsx";
-import "./App.css";
+import CreatePinForm from "./components/forms/CreatePinForm.jsx";
 
 function App() {
   return (
     <UIProvider>
-      <Center border="1px">
+      <VStack spacing={2} align="center">
+        <CreatePinForm />
         <DescriptionsForm />
-      </Center>
+      </VStack>
     </UIProvider>
   );
 }
