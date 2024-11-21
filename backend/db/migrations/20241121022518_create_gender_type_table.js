@@ -5,7 +5,7 @@
 exports.up = function(knex) {
   return knex.schema.createTable("gender_type", function(table) {
     table.increments("id").primary();
-    table.string("type" ,8);
+    table.string("type" ,20);
   })
 };
 

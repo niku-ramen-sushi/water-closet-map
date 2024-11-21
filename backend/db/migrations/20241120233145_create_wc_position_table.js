@@ -9,7 +9,7 @@ exports.up = function(knex) {
     table.string("title", 64).notNullable();
     table.string("address", 255).notNullable();
     table.decimal("latitude",9,7).notNullable();
-    table.decimal("longitude",10.7).notNullable();
+    table.decimal("longitude",10,7).notNullable();
     table.text("comment");
     table.timestamp("created_at").notNullable();
 

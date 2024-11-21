@@ -11,7 +11,7 @@ exports.up = function(knex) {
     table.string("password", 64).notNullable();
     table.timestamp("created_at").notNullable();
     table.decimal("latitude",9,7);
-    table.decimal("longitude",10.7);
+    table.decimal("longitude",10,7);
 
   })
 };
