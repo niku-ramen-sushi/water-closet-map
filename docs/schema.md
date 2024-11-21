@@ -4,7 +4,6 @@
 
 または [dbdiagram](https://dbdiagram.io/d/673d805fe9daa85aca10a250) で確認してください。
 
-
 ```txt
 // Use DBML to define your database structure
 // Docs: https://dbml.dbdiagram.io/docs
@@ -61,6 +60,7 @@ Ref:favorite.wc_id > wc_info.id [delete: cascade]
 | 記号   | 関係性 |
 | ------ | ------ |
 | pk     | 主キー |
+| ref: - | 一対一 |
 | ref: > | 多対一 |
 | ref: < | 一対多 |
-| ref: - | 一対一 |
+
