@@ -16,8 +16,8 @@ Table users {
   email varchar(64) [not null, unique]
   password varchar(64) [not null]
   created_at timestamp [not null]
-  latitude decimal
-  longitude decimal
+  latitude decimal(9,7)
+  longitude decimal(10,7)
 }
 
 //wc info
@@ -26,9 +26,8 @@ table wc_position {
   user_id int
   title varchar(64) [not null]
   address varchar(255)
-  latitude doubleprecision [not null]
-  longitude doubleprecision [not null]
-  comment text
+  latitude decimal(9,7) [not null]
+  longitude decimal(10,7) [not null]
   created_at timestamp
 }
 
@@ -37,7 +36,7 @@ table wc_description {
   hygiene_id int
   wc_pos_id int
   gender_type_id int
-
+  comment text
 }
 
 //
