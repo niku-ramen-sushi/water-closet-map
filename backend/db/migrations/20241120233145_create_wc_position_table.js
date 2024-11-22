@@ -7,11 +7,10 @@ exports.up = function(knex) {
     table.increments("id").primary();
     table.integer("user_id").notNullable();
     table.string("title", 64).notNullable();
-    table.string("address", 255).notNullable();
+    table.string("address", 255);
     table.decimal("latitude",9,7).notNullable();
     table.decimal("longitude",10,7).notNullable();
-    table.text("comment");
-    table.timestamp("created_at").notNullable();
+    table.timestamp("created_at");
 
     table.foreign("user_id").references("users.id").onDelete("CASCADE");
   })

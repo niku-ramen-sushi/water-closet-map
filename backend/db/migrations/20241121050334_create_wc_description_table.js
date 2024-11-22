@@ -8,6 +8,7 @@ exports.up = function(knex) {
     table.integer("hygiene_id");
     table.integer("wc_pos_id");
     table.integer("gender_type_id");
+    table.text("comment");
 
     table.foreign("hygiene_id").references("hygiene_info.id").onDelete("CASCADE");
     table.foreign("wc_pos_id").references("wc_position.id").onDelete("CASCADE");
