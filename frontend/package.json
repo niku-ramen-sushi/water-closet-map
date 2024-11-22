@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "setup": "npm install && npm run dev"
+    "setup": "npm install && npm run build"
   },
   "dependencies": {
     "@yamada-ui/lucide": "^1.8.1",
