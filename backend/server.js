@@ -13,6 +13,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/", express.static("../frontend/dist"));
 
+//全ユーザーのデータ
 app.get("/api/users", async(req,res) => {
   const userData= await db
     .select("*")
@@ -20,6 +21,7 @@ app.get("/api/users", async(req,res) => {
   res.status(200).send(userData);
 })
 
+//idのユーザー情報
 app.get("/api/users/:id",async(req,res)=>{
   const idParams = req.params.id;
   const userInfo = await db
@@ -27,12 +29,13 @@ app.get("/api/users/:id",async(req,res)=>{
       "users.*",
       "favorite.wc_id"
       )
-    .where(id=idParams)
+    .where({id:idParams})
     .from("users")
     .join("favorite",{"favorite.user_id":"users.id"});
   res.status(200).send(userInfo);
 })
 
+//清潔度の選択用に使用
 app.get("/api/hygiene", async(req,res) => {
   const hygieneData = await db
     .select("*")
@@ -40,6 +43,7 @@ app.get("/api/hygiene", async(req,res) => {
   res.status(200).send(hygieneData);
 })
 
+//トイレ種類の選択用に使用
 app.get("/api/gender-type", async(req,res) => {
   const genderTypeData = await db
     .select("*")
@@ -47,7 +51,66 @@ app.get("/api/gender-type", async(req,res) => {
   res.status(200).send(genderTypeData);
 })
 
-app.get("/api/wc-info", async(req,res) => {
+//ログイン後のピン表示用
+app.get("/api/all-wc-position", async(req,res) => {
+  const allWcPositionData = await db
+    .select(
+      "id",
+      "latitude",
+      "longitude"
+    )
+    .from("wc_position");
+  res.status(200).send(allWcPositionData);
+})
+
+//ピンをクリックした時の詳細表示(写真は別)
+app.get("/api/click-wc-data:id", async (req, res) => {
+  const idParams = req.params.id;
+  const wcData = await db
+    .select(
+      "comment",
+      "wc_position.title",
+      "wc_position.address",
+      "wc_position.created_at",
+      "hygiene_info.name",
+      "gender_type.type"
+      )
+    .where({wc_pos_id:idParams})
+    .from("wc_description")
+    .join("wc_position", {"wc_position.id":"wc_description.wc_pos_id"})
+    .join("hygiene_info", {"hygiene_info.id":"wc_description.hygiene_id"})
+    .join("gender_type", {"gender_type.id":"wc_description.gender.type.id"})
+  res.status(200).send(wcData);
+})
+
+//ピンをクリックした時の詳細表示(写真のみ)
+app.get("/api/click-wc-picture:id", async (req, res) => {
+  const idParams = req.params.id;
+  const wcPictureData = await db
+    .select(
+      "pictures.path_name",
+    )
+    .where({wc_pos_id:idParams})
+    .from("wc_description")
+    .join("pictures", {"pictures.wc_desc_id":"wc_description.id"})
+  res.status(200).send(wcPictureData)
+})
+
+//お気に入りを表示する
+app.get("/api/favorite:id", async (req,res) => {
+  const idParams = req.params.id;
+  const userFavorite = await db
+    .select(
+      "wc_position.id"
+    )
+    .wehre({user_id:idParams})
+    .from("favorite")
+    .join("wc_position", {"wc_position.id":"favorite.wc_id"})
+  res.status(200).send(userFavorite);
+})
+
+//使えるのか分からない
+app.get("/api/wc-info", async (req,res) => {
   const wcInfoData = await db
     .select(
       "title", "address", "latitude", "longitude", "created_at",
@@ -63,3 +126,18 @@ app.get("/api/wc-info", async(req,res) => {
   res.status(200).send(wcInfoData);
 })
 
+//commit用にPOSTメソッドコメントアウト
+//サインアップ登録用
+// app.post("/api/create-user", async(req,res)=>{
+//   const createUserData = await req.body;
+//   knex("users")
+//     .insert(createUserData)
+//     .then(() => console.log("データ挿入完了"))
+//     .catch((err) => console.log("失敗 : ", err))
+//     .finally(() => knex.destroy());
+// })
+
+//新たなトイレ情報登録用
+
+
+//お気に入り登録用
