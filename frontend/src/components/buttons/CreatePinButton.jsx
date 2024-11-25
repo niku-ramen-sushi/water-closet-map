@@ -1,11 +1,13 @@
 import { Button } from "@yamada-ui/react";
 import { useSetAtom } from "jotai";
 import { isCreatePinAtom } from "../../globalState.js";
+import axios from "axios";
 
 const CreatePinButton = () => {
   const setIsCreatePin = useSetAtom(isCreatePinAtom);
 const getAPI=async()=>{
-    const responce= await axios.get()
+    const response= await axios.get("/api/users")
+    console.log(response.data)
 }
 
   return (
