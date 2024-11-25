@@ -11,13 +11,14 @@
     "setup": "npm install && npm run build"
   },
   "dependencies": {
+    "@vitejs/plugin-react": "^4.3.3",
     "@yamada-ui/lucide": "^1.8.1",
     "@yamada-ui/react": "^1.6.4",
+    "axios": "^1.7.7",
     "jotai": "^2.10.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "vite": "^5.4.10",
-    "@vitejs/plugin-react": "^4.3.3"
+    "vite": "^5.4.10"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
