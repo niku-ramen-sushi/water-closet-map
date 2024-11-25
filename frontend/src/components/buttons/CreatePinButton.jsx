@@ -4,6 +4,9 @@ import { isCreatePinAtom } from "../../globalState.js";
 
 const CreatePinButton = () => {
   const setIsCreatePin = useSetAtom(isCreatePinAtom);
+const getAPI=async()=>{
+    const responce= await axios.get()
+}
 
   return (
     <Button
@@ -11,6 +14,7 @@ const CreatePinButton = () => {
       variant="solid"
       onClick={() => {
         console.log("on clicked");
+        getAPI()
         setIsCreatePin(true);
       }}
     >
