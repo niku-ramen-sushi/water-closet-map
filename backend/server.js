@@ -1,13 +1,13 @@
 const express = require("express");
 const db = require("./knex");
 const cors = require("cors");
-const path = require('path');
+const path = require("path");
 const app = express();
 
 // 静的ファイルの配信
 console.log(`👻👻👻👻👻 staticを開始`);
 
-app.use(express.static(path.join(__dirname, '../frontend/dist')));
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
 // 環境変数の確認
 console.log(`👻👻👻👻👻 Running in ${process.env.NODE_ENV} mode`);
@@ -27,13 +27,12 @@ app.get("/api/users", async (req, res) => {
   res.status(200).send(userData);
 });
 
-
 //idのユーザー情報
 app.get("/api/users/:id", async (req, res) => {
   const idParams = req.params.id;
   const userInfo = await db
     .select("users.*", "favorite.wc_id")
-    .where( "users.id", idParams)
+    .where("users.id", idParams)
     .from("users")
     .join("favorite", { "favorite.user_id": "users.id" });
   res.status(200).send(userInfo);
@@ -69,7 +68,7 @@ app.get("/api/click-wc-data/:id", async (req, res) => {
       "wc_position.address",
       "wc_position.created_at",
       "hygiene_info.name",
-      "gender_type.type"
+      "gender_type.type",
     )
     .where("wc_description.wc_pos_id", idParams)
     .from("wc_description")
@@ -95,7 +94,7 @@ app.get("/api/favorite/:id", async (req, res) => {
   const idParams = req.params.id;
   const userFavorite = await db
     .select("wc_position.id")
-    // .where("user_id", idParams)これを追加するとエラーになる
+    .where({ user_id: idParams })
     .from("favorite")
     .join("wc_position", { "wc_position.id": "favorite.wc_id" });
   res.status(200).send(userFavorite);
@@ -113,7 +112,7 @@ app.get("/api/wc-info", async (req, res) => {
       "wc_description.comment",
       "pictures.path_name",
       "hygiene_info.name",
-      "gender_type.type"
+      "gender_type.type",
     )
     .from("wc_position")
     .join("wc_description", { "wc_description.wc_pos_id": "wc_position.id" })

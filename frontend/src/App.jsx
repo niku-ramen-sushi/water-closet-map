@@ -11,25 +11,27 @@ function App() {
   const setIsPinEdit = useSetAtom(isPinEditAtom);
   const setSelectedPinId = useSetAtom(selectedPinIdAtom);
 
+  const pinList = pins.map((pin, i) => {
+    return (
+      <HStack spacing={2} align="center" key={i}>
+        <MapPin />
+        <Button
+          onClick={() => {
+            setIsPinEdit(true);
+            setSelectedPinId(i);
+          }}
+        >
+          {pin.title}
+        </Button>
+      </HStack>
+    );
+  });
+
   return (
     <UIProvider>
       <VStack spacing={2} align="center">
         <CreatePinButton />
-        {pins.map((pin, i) => {
-          return (
-            <HStack spacing={2} align="center" key={i}>
-              <MapPin />
-              <Button
-                onClick={() => {
-                  setIsPinEdit(true);
-                  setSelectedPinId(i);
-                }}
-              >
-                {pin.title}
-              </Button>
-            </HStack>
-          );
-        })}
+        {pinList}
         <CreatePinForm />
         <DescriptionsForm />
       </VStack>
