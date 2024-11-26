@@ -9,15 +9,17 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const navigate = useNavigate();
 
-  // sing in
-  const handleSignInClick = async () => {
+  // sing in or lon
+  const handleSignupOrLoginClick = async (e) => {
+    const selectUrl =
+      e.target.textContent === '新規登録' ? '/signup' : '/login';
     const loginUser = {
       username: username,
       password: password,
       email: email,
     };
     // fetch version
-    let response = await fetch(`http://localhost:3000/signup`, {
+    let response = await fetch(`http://localhost:3000${selectUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -27,30 +29,6 @@ const Login = () => {
     });
     const data = await response.json();
     console.log('server response: ', data);
-    if (response.ok) {
-      navigate('/map');
-    }
-  };
-
-  // log in
-  const handleLogInClick = async () => {
-    const loginUser = {
-      username: username,
-      password: password,
-      email: email,
-    };
-    // fetch version
-    let response = await fetch(`http://localhost:3000/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(loginUser),
-      credentials: 'include', // クッキーを含める
-    });
-    const data = await response.json();
-    console.log('server response: ', data);
-    console.log('🚀🚀🚀🚀 response.ok', response.ok);
     if (response.ok) {
       navigate('/map');
     }
@@ -94,8 +72,8 @@ const Login = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         ></Input>
-        <Button onClick={handleSignInClick}>新規登録</Button>
-        <Button onClick={handleLogInClick}>ログイン</Button>
+        <Button onClick={handleSignupOrLoginClick}>新規登録</Button>
+        <Button onClick={handleSignupOrLoginClick}>ログイン</Button>
         <Button onClick={handleLogoutClick}>ログアウト</Button>
       </VStack>
     </Center>
