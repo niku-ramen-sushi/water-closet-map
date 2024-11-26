@@ -1,32 +1,23 @@
 'use client';
-import { Button, VStack } from '@yamada-ui/react';
-import { Input, Flex, Text } from '@chakra-ui/react';
-import { Field } from './components/ui/field';
-import { PasswordInput } from './components/ui/password-input';
-import { useForm } from 'react-hook-form';
+import { Button, Center, Input, Text, VStack } from '@yamada-ui/react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import axios from 'axios';
 
 const Login = () => {
-  const [isSignInMode, setIsSignInMode] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
   const navigate = useNavigate();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
-
-  const onSubmit = handleSubmit(async (data) => {
-    const urlPath = isSignInMode ? 'signup' : 'login';
-    setIsSignInMode(false);
+  // sing in
+  const handleSignInClick = async () => {
     const loginUser = {
-      username: data.username,
-      password: data.password,
+      username: username,
+      password: password,
+      email: email,
     };
     // fetch version
-    let response = await fetch(`http://localhost:3000/${urlPath}`, {
+    let response = await fetch(`http://localhost:3000/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -34,87 +25,80 @@ const Login = () => {
       body: JSON.stringify(loginUser),
       credentials: 'include', // クッキーを含める
     });
+    const data = await response.json();
+    console.log('server response: ', data);
     if (response.ok) {
-      response = await response.json();
-      console.log('server response: ', response);
-      navigate('/userlist');
+      navigate('/map');
     }
-  });
+  };
 
-  // axios version
-  //   const response = await axios.post(
-  //     `http://localhost:3000/${urlPath}`,
-  //     loginUser,
-  //     {
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         withCredentials: true,
-  //       },
-  //     }
-  //   );
-  //   console.log('signup server response:  ', response.data);
-  // });
+  // log in
+  const handleLogInClick = async () => {
+    const loginUser = {
+      username: username,
+      password: password,
+      email: email,
+    };
+    // fetch version
+    let response = await fetch(`http://localhost:3000/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(loginUser),
+      credentials: 'include', // クッキーを含める
+    });
+    const data = await response.json();
+    console.log('server response: ', data);
+    console.log('🚀🚀🚀🚀 response.ok', response.ok);
+    if (response.ok) {
+      navigate('/map');
+    }
+  };
 
-  function handleSignInClick() {
-    setIsSignInMode(true);
-  }
+  // logout
+  const handleLogoutClick = async () => {
+    // fetch version
+    let response = await fetch(`http://localhost:3000/logout`);
+    const data = await response.json();
+    console.log('server response: ', data);
+    if (response.ok) {
+      navigate('/');
+    }
+  };
 
   return (
-    <VStack>
-      <Flex gap="20" mt="5">
-        <form onSubmit={onSubmit}>
-          <VStack>
-            <Text>
-              {isSignInMode ? '初めての利用の方' : 'ユーザー登録がお済みの方'}
-            </Text>
-            <Field
-              label="ユーザー名"
-              invalid={!!errors.username}
-              errorText={errors.username?.message}
-            >
-              <Input
-                {...register('username', { required: 'Username is required' })}
-              />
-            </Field>
-            <Field
-              label="パスワード"
-              invalid={!!errors.password}
-              errorText={errors.password?.message}
-            >
-              <PasswordInput
-                {...register('password', { required: 'Password is required' })}
-              />
-            </Field>
-            <Button
-              variant="subtle"
-              px="8"
-              mx="4"
-              textStyle="md"
-              mt="4"
-              type="submit"
-            >
-              {isSignInMode ? '新規ユーザー登録' : 'ログインして進む'}
-            </Button>
-          </VStack>
-        </form>
-        {isSignInMode || (
-          <VStack>
-            <Text>初めての利用の方</Text>
-            <Text mt={9}>こちらから新規ユーザー登録へお進みください</Text>
-            <Button
-              variant="subtle"
-              px="8"
-              mx="4"
-              textStyle="md"
-              mt="24"
-              onClick={handleSignInClick}
-            >
-              新規ユーザー登録
-            </Button>
-          </VStack>
-        )}
-      </Flex>
-    </VStack>
+    <Center h="2xl" w="md" color="white">
+      <VStack>
+        <Text color="gray.700">username</Text>
+        <Input
+          type="text"
+          placeholder="your name"
+          color="gray.700"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        ></Input>
+        <Text color="gray.700">e-mail</Text>
+        <Input
+          type="email"
+          placeholder="your e-mail"
+          color="gray.700"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        ></Input>
+        <Text color="gray.700">password</Text>
+        <Input
+          type="password"
+          placeholder="your password"
+          color="gray.700"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        ></Input>
+        <Button onClick={handleSignInClick}>新規登録</Button>
+        <Button onClick={handleLogInClick}>ログイン</Button>
+        <Button onClick={handleLogoutClick}>ログアウト</Button>
+      </VStack>
+    </Center>
   );
 };
 export default Login;
