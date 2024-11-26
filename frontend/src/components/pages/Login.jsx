@@ -1,15 +1,7 @@
 'use client';
-import {
-  Box,
-  Button,
-  Center,
-  Flex,
-  Input,
-  Text,
-  VStack,
-} from '@yamada-ui/react';
+import { Box, Button, Center, Input, Text, VStack } from '@yamada-ui/react';
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [username, setUsername] = useState('');
