@@ -41,6 +41,7 @@ app.get("/api/users/:id", async (req, res) => {
 //清潔度の選択用に使用checkOK
 app.get("/api/hygiene", async (req, res) => {
   const hygieneData = await db.select("*").from("hygiene_info");
+  console.log("====",hygieneData)
   res.status(200).send(hygieneData);
 });
 
@@ -53,22 +54,51 @@ app.get("/api/gender-type", async (req, res) => {
 //ログイン後のピン表示用checkOK
 app.get("/api/all-wc-position", async (req, res) => {
   const allWcPositionData = await db
-    .select("id", "latitude", "longitude")
+    .select("id", "latitude", "longitude","title")
     .from("wc_position");
   res.status(200).send(allWcPositionData);
+});
+
+//ピンをクリックした時の詳細表示(写真は別)checkOK-自分の投稿のみ（編集用）
+app.get("/api/click-wc-data/:id/:userid", async (req, res) => {
+  let {id,userid} = req.params;
+  id = Number(id)
+  userid = Number(userid)
+  console.log("----",id,userid)
+  const wcData = await db
+      .select("wc_description.id",
+          "comment",
+          "wc_position.title",
+          "wc_position.address",
+          "wc_position.created_at",
+          "hygiene_info.name",
+          "gender_type.type",
+          "wc_position.user_id",
+          "wc_description.wc_pos_id"
+      )
+      .where({"wc_description.wc_pos_id": id})
+          .andWhere({"wc_description.user_id":userid})
+      .from("wc_description")
+      .join("wc_position", { "wc_position.id": "wc_description.wc_pos_id" })
+      .join("hygiene_info", { "hygiene_info.id": "wc_description.hygiene_id" })
+      .join("gender_type", { "gender_type.id": "wc_description.gender_type_id" });
+  res.status(200).send(wcData);
 });
 
 //ピンをクリックした時の詳細表示(写真は別)checkOK
 app.get("/api/click-wc-data/:id", async (req, res) => {
   const idParams = req.params.id;
+  console.log("----",idParams)
   const wcData = await db
-    .select(
+    .select("wc_description.id",
       "comment",
       "wc_position.title",
       "wc_position.address",
       "wc_position.created_at",
       "hygiene_info.name",
       "gender_type.type",
+        "wc_position.user_id",
+        "wc_description.wc_pos_id"
     )
     .where("wc_description.wc_pos_id", idParams)
     .from("wc_description")

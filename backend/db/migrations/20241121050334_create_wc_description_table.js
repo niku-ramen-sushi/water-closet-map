@@ -9,10 +9,12 @@ exports.up = function(knex) {
     table.integer("wc_pos_id");
     table.integer("gender_type_id");
     table.text("comment");
+    table.integer("user_id");
 
     table.foreign("hygiene_id").references("hygiene_info.id").onDelete("CASCADE");
     table.foreign("wc_pos_id").references("wc_position.id").onDelete("CASCADE");
     table.foreign("gender_type_id").references("gender_type.id").onDelete("CASCADE");
+    table.foreign("user_id").references("users.id").onDelete("CASCADE");
   })
 };
 

@@ -7,8 +7,8 @@
 // import { isPinEditAtom, pinsAtom, selectedPinIdAtom } from './globalState.js';
 import ToiletMap from './components/pages/ToiletMap.jsx';
 import { Route, Routes } from 'react-router-dom';
-import Login from './components/pages/Login.jsx';
-import Notfound from './components/pages/Notfound.jsx';
+// import Login from './components/pages/Login.jsx';
+// import Notfound from './components/pages/Notfound.jsx';
 
 function App() {
   // const pins = useAtomValue(pinsAtom);
@@ -19,7 +19,7 @@ function App() {
     <Routes>
       {/*<Route path="/" element={<Login />} />*/}
       <Route path="/" element={<ToiletMap />} />
-      <Route path="*" element={<Notfound />} />
+      {/*<Route path="*" element={<Notfound />} />*/}
     </Routes>
     // <VStack spacing={2} align="center">
     //   <CreatePinButton />
