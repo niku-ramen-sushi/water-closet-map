@@ -1,7 +1,15 @@
 'use client';
-import { Button, Center, Input, Text, VStack } from '@yamada-ui/react';
+import {
+  Box,
+  Button,
+  Center,
+  Flex,
+  Input,
+  Text,
+  VStack,
+} from '@yamada-ui/react';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -9,6 +17,9 @@ const Login = () => {
   const [loginMode, setLoginMode] = useState('login');
   const [email, setEmail] = useState('');
   const navigate = useNavigate();
+
+  const isLoginButtonEnabled = username.length >= 4 && password.length >= 4;
+  const isSignupButtonEnabled = isLoginButtonEnabled && email.length >= 4;
 
   // sing in or lon
   const handleSignupOrLoginClick = async (e) => {
@@ -57,47 +68,94 @@ const Login = () => {
         navigate('/map');
       }
     };
+
     checkAuth();
   }, []);
 
   return (
-    <Center h="2xl" w="md" color="white">
-      <VStack>
-        <Text color="gray.700">username</Text>
-        <Input
-          type="text"
-          placeholder="your name"
-          color="gray.700"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        ></Input>
-        {loginMode === 'signup' && (
-          <>
-            <Text color="gray.700">e-mail</Text>
+    <Center>
+      <Box mt="4xl" w="md">
+        <VStack>
+          <Center>
+            <Text fontSize="5xl" fontWeight="bold">
+              water-closet-map
+            </Text>
+          </Center>
+          <VStack>
+            <Text color="gray.700">Name</Text>
             <Input
-              type="email"
-              placeholder="your e-mail"
+              type="text"
+              placeholder="your name"
               color="gray.700"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             ></Input>
-          </>
-        )}
-        <Text color="gray.700">password</Text>
-        <Input
-          type="password"
-          placeholder="your password"
-          color="gray.700"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        ></Input>
-        {loginMode === 'signup' ? (
-          <Button onClick={handleSignupOrLoginClick}>新規登録</Button>
-        ) : (
-          <Button onClick={handleSignupOrLoginClick}>ログイン</Button>
-        )}
-        <Button onClick={handleLogoutClick}>ログアウト</Button>
-      </VStack>
+            {loginMode === 'signup' && (
+              <>
+                <Text color="gray.700">E-Mail</Text>
+                <Input
+                  type="email"
+                  placeholder="your e-mail"
+                  color="gray.700"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                ></Input>
+              </>
+            )}
+            <Text color="gray.700">Password</Text>
+            <Input
+              type="password"
+              placeholder="your password"
+              color="gray.700"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            ></Input>
+            {loginMode === 'signup' ? (
+              <Button
+                onClick={handleSignupOrLoginClick}
+                disabled={!isSignupButtonEnabled}
+              >
+                新規登録
+              </Button>
+            ) : (
+              <Button
+                onClick={handleSignupOrLoginClick}
+                disabled={!isLoginButtonEnabled}
+              >
+                ログイン
+              </Button>
+            )}
+            <Center>
+              {loginMode === 'login' ? (
+                <Text
+                  color="blue.700"
+                  fontWeight="bold"
+                  textDecoration="underline"
+                  onClick={() => setLoginMode('signup')}
+                >
+                  初めての利用はこちら
+                </Text>
+              ) : (
+                <Text
+                  color="blue.700"
+                  fontWeight="bold"
+                  textDecoration="underline"
+                  onClick={() => setLoginMode('signup')}
+                >
+                  既に登録済みの方はこちら
+                </Text>
+              )}
+            </Center>
+
+            <Button onClick={handleLogoutClick}>ログアウト</Button>
+            <Center>
+              <Text fontSize="sm" color="gray.300">
+                © 2024 にくらーめんすし × katana
+              </Text>
+            </Center>
+          </VStack>
+        </VStack>
+      </Box>
     </Center>
   );
 };
