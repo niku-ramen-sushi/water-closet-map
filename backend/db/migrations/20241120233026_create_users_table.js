@@ -8,7 +8,7 @@ exports.up = function(knex) {
     table.string("name", 64).notNullable();
     table.string("gender",1);
     table.string("email", 64).notNullable();
-    table.string("password", 64).notNullable();
+    table.string("password").notNullable();
     table.timestamp("created_at").defaultTo(knex.fn.now());;
     table.decimal("latitude",9,7);
     table.decimal("longitude",10,7);
