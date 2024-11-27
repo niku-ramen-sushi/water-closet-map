@@ -6,12 +6,21 @@ import {
   HStack,
   VStack,
   Center,
+  useDisclosure,
 } from '@yamada-ui/react';
 import {
   Accordion,
   AccordionItem,
   AccordionLabel,
   AccordionPanel,
+} from '@yamada-ui/react';
+import {
+  Drawer,
+  DrawerOverlay,
+  DrawerCloseButton,
+  DrawerHeader,
+  DrawerBody,
+  DrawerFooter,
 } from '@yamada-ui/react';
 
 // 既存コンポーネントのインストール
@@ -136,6 +145,30 @@ function ToiletMap() {
     );
   }
 
+  function DetailDrawer() {
+    const { isOpen, onOpen, onClose } = useDisclosure();
+
+    return (
+      <>
+        <Button onClick={onOpen}>Open Drawer</Button>
+
+        <Drawer isOpen={isOpen} onClose={onClose}>
+          <DrawerHeader>トイレ詳細情報</DrawerHeader>
+
+          <DrawerBody>
+            <DisplayPosts />
+          </DrawerBody>
+
+          <DrawerFooter>
+            <Button variant="ghost" onClick={onClose}>
+              とじる
+            </Button>
+          </DrawerFooter>
+        </Drawer>
+      </>
+    );
+  }
+
   return (
     <Grid templateColumns="300px 1fr " gap={4}>
       <GridItem>
@@ -146,11 +179,9 @@ function ToiletMap() {
       <GridItem>
         <VStack h="100%" justify="space-between">
           <div></div>
+          <Center w="100%">{/*<CreatePinForm />*/}</Center>
           <Center w="100%">
-            <CreatePinForm />
-          </Center>
-          <Center w="100%">
-            {/*<DescriptionsForm />*/}
+            <DetailDrawer />
             {isPinEdit ? <DescriptionsForm /> : <DisplayPosts />}
           </Center>
         </VStack>
