@@ -34,7 +34,7 @@ import {
 
 // 既存コンポーネントのインポート
 import DescriptionsForm from '../forms/DescriptionsForm.jsx';
-import CreatePinForm from '../forms/CreatePinForm.jsx';
+// import CreatePinForm from '../forms/CreatePinForm.jsx';
 import CreatePinButton from '../buttons/CreatePinButton.jsx';
 
 // Jotai関連のインポート
@@ -236,7 +236,7 @@ function ToiletMap() {
       </GridItem>
 
       <GridItem>
-        <Text size="lg">ここにGoogleマップ</Text>
+        <GoogleMap pins={pins} />
       </GridItem>
     </Grid>
   );
