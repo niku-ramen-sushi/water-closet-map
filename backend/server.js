@@ -55,8 +55,7 @@ app.use(passport.session());
 passport.use(
   new LocalStrategy(async (username, password, done) => {
     const user = await find(username);
-
-    if (!user) {
+    if (user.password === undefined) {
       // ユーザーが見つからない場合
       return done(null, false);
     }
@@ -93,6 +92,7 @@ function checkAuth(req, res, next) {
 
 // ログインエンドポイント
 app.post("/api/login", (req, res) => {
+  console.log("🚀🚀🚀🚀 req.body--->> ", req.body);
   const { username, password } = req.body;
   if (!username || !password) {
     return res.status(400).json({

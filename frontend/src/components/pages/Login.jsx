@@ -1,4 +1,3 @@
-'use client';
 import { Box, Button, Center, Input, Text, VStack } from '@yamada-ui/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -31,6 +30,9 @@ const Login = () => {
       body: JSON.stringify(loginUser),
       credentials: 'include', // クッキーを含める
     });
+
+    const data = await response.json();
+    console.log('server response: ', data);
 
     if (response.ok) {
       navigate('/map');
@@ -120,7 +122,7 @@ const Login = () => {
                   color="blue.700"
                   fontWeight="bold"
                   textDecoration="underline"
-                  onClick={() => setLoginMode('signup')}
+                  onClick={() => setLoginMode('login')}
                 >
                   既に登録済みの方はこちら
                 </Text>
