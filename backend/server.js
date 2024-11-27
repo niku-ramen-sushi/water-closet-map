@@ -32,6 +32,8 @@ app.use("/", express.static("../frontend/dist"));
 
 // 認証機能 ====================================================
 // セッション設定 express-session
+
+app.set("trust proxy", true); // Renderでsession idが保存されないので設定
 app.use(
   session({
     secret: process.env.COOKIE_SECRET,
