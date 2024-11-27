@@ -177,6 +177,7 @@ app.get("/api/logout", (req, res, next) => {
 });
 
 app.get("/api/auth_check", (req, res) => {
+  console.log("🚀🚀🚀🚀 /api/auth_checkの中--->> ", req);
   if (req.isAuthenticated()) {
     res.json({ authenticated: true, user: req.user });
   } else {

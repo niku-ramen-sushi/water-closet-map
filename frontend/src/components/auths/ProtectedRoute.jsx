@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 // eslint-disable-next-line react/prop-types
 const ProtectedRoute = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
-
   useEffect(() => {
     const checkAuth = async () => {
       const response = await fetch('/api/auth_check', {
@@ -12,6 +11,8 @@ const ProtectedRoute = ({ children }) => {
       });
       const data = await response.json();
       setIsAuthenticated(data.authenticated);
+      console.log('🚀🚀🚀🚀 useEffectの中--->> ');
+      console.log('🚀🚀🚀🚀 data.authenticated--->> ', data.authenticated);
     };
     checkAuth();
   }, []);
