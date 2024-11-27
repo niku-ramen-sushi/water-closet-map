@@ -7,7 +7,7 @@ const ProtectedRoute = ({ children }) => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const response = await fetch('http://localhost:3000/api/auth_check', {
+      const response = await fetch('/api/auth_check', {
         credentials: 'include', // セッション情報を送信
       });
       const data = await response.json();

@@ -23,7 +23,7 @@ const Login = () => {
       email: email,
     };
     // fetch version
-    let response = await fetch(`http://localhost:3000${selectUrl}`, {
+    let response = await fetch(`${selectUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -41,7 +41,7 @@ const Login = () => {
   // logout
   const handleLogoutClick = async () => {
     // fetch version
-    let response = await fetch(`http://localhost:3000/logout`);
+    let response = await fetch(`/logout`);
     const data = await response.json();
     console.log('server response: ', data);
     if (response.ok) {
@@ -52,7 +52,7 @@ const Login = () => {
   // 認証済みの場合は、map画面へ遷移する
   useEffect(() => {
     const checkAuth = async () => {
-      const response = await fetch('http://localhost:3000/api/auth_check', {
+      const response = await fetch('/api/auth_check', {
         credentials: 'include', // セッション情報を送信
       });
       const data = await response.json();

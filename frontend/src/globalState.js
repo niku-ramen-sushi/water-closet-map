@@ -12,3 +12,4 @@ export const isNewPlaceAtom = atom(false);
 export const selectedTitleAtom = atom({ id: 0, title: '' });
 export const selectedMyPinAtom = atom([{ id: 0 }]);
 export const isNewCardAtom = atom(false);
+export const latLngAtom = atom({});
