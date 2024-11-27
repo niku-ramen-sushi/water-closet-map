@@ -24,13 +24,14 @@ app.listen(PORT, () => {
 });
 
 app.use(
-    cors({}
+  cors(
+    {},
     //     {
     //   origin: "http://localhost:5173", //アクセス許可するオリジン
     //   credentials: true, //レスポンスヘッダーにAccess-Control-Allow-Credentials追加
     //   optionsSuccessStatus: 200, //レスポンスstatusを200に設定
     // }
-    ),
+  ),
 );
 
 app.use(express.json());
@@ -39,16 +40,16 @@ app.use("/", express.static("../frontend/dist"));
 // 認証機能 ====================================================
 // セッション設定 express-session
 app.use(
-    session({
-      secret: process.env.COOKIE_SECRET,
-      resave: false,
-      saveUninitialized: false,
-      cookie: {
-        maxAge: 24 * 60 * 60 * 1000, // 有効期限設定 1日
-        secure: false, // true->httpsのみを許可、localはhttpなので切り替え
-        httpOnly: true, // javascriptからのアクセスを防ぐ
-      },
-    }),
+  session({
+    secret: process.env.COOKIE_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 24 * 60 * 60 * 1000, // 有効期限設定 1日
+      secure: false, // true->httpsのみを許可、localはhttpなので切り替え
+      httpOnly: true, // javascriptからのアクセスを防ぐ
+    },
+  }),
 );
 
 // passport session
@@ -57,34 +58,33 @@ app.use(passport.session());
 
 // LocalStrategy(ユーザー名・パスワードでの認証)の設定
 passport.use(
-    new LocalStrategy(async (username, password, done) => {
+  new LocalStrategy(async (username, password, done) => {
+    const user = find(username);
 
-      const user = find(username)
-
-      if (!user) {
-        // ユーザーが見つからない場合
-        return done(null, false);
-      }
-      // ハッシュ化したPWの突き合わせ。入力されたpasswordから、DBに保存されたハッシュ値を比較する
-      const match = await bcrypt.compare(password, user.hashed_password);
-      if (match) {
-        return done(null, user); // ログイン成功
-      } else {
-        return done(null, false); // ログイン失敗
-      }
-    }),
+    if (!user) {
+      // ユーザーが見つからない場合
+      return done(null, false);
+    }
+    // ハッシュ化したPWの突き合わせ。入力されたpasswordから、DBに保存されたハッシュ値を比較する
+    const match = await bcrypt.compare(password, user.hashed_password);
+    if (match) {
+      return done(null, user); // ログイン成功
+    } else {
+      return done(null, false); // ログイン失敗
+    }
+  }),
 );
 
 // 認証に成功した時にsessionにusernameを保存するための記述
 passport.serializeUser((user, done) => done(null, user));
 // sessionからuserを取り出して検証するための記述
 passport.deserializeUser(async (username, done) => {
-  const user = find(username)
+  const user = find(username);
   done(null, user);
 });
 
 async function find(username) {
-  const [foundUser] = await db('users').where({ username });
+  const [foundUser] = await db("users").where({ username });
   return foundUser || {};
 }
 
@@ -118,21 +118,20 @@ app.post("/login", (req, res) => {
 
 // サインアップ
 async function signup(username, password) {
-
   const [newUsername] = await db("users")
-      .insert({
-        name: username,
-        email: "temp@mail.com",
-        password: bcrypt.hashSync(password, 10),
-      })
-      .returning("name");
+    .insert({
+      name: username,
+      email: "temp@mail.com",
+      password: bcrypt.hashSync(password, 10),
+    })
+    .returning("name");
 
   console.log("🚀🚀🚀🚀 newUsername--->> ", newUsername);
   return newUsername;
 }
 
 app.post("/signup", async (req, res) => {
-    console.log("---signup---",req.body)
+  console.log("---signup---", req.body);
   const { username, password } = req.body;
   if (!username || !password) {
     res.status(400).json({
@@ -157,8 +156,8 @@ app.post("/signup", async (req, res) => {
 
 // dbからユーザー情報を検索
 async function findUser(username) {
-    const [foundUser] = await db("users").where({ name: username });
-    return foundUser || {};
+  const [foundUser] = await db("users").where({ name: username });
+  return foundUser || {};
 }
 
 // ログアウトエンドポイント
@@ -198,7 +197,7 @@ app.get("/api/users/:id", async (req, res) => {
 //清潔度の選択用に使用checkOK
 app.get("/api/hygiene", async (req, res) => {
   const hygieneData = await db.select("*").from("hygiene_info");
-  console.log("====",hygieneData)
+  console.log("====", hygieneData);
   res.status(200).send(hygieneData);
 });
 
@@ -211,57 +210,61 @@ app.get("/api/gender-type", async (req, res) => {
 //ログイン後のピン表示用checkOK
 app.get("/api/all-wc-position", async (req, res) => {
   const allWcPositionData = await db
-    .select("id", "latitude", "longitude","title")
+    .select("id", "latitude", "longitude", "title")
     .from("wc_position");
   res.status(200).send(allWcPositionData);
 });
 
-//ピンをクリックした時の詳細表示(写真は別)checkOK-自分の投稿のみ（編集用）
-app.get("/api/click-wc-data/:id/:userid", checkAuth,async (req, res) => {
-  let {id,userid} = req.params;
-  id = Number(id)
-  userid = Number(userid)
-  console.log("----",id,userid)
+//ピンをクリックした時の詳細表示(写真は別)checkOK-自分の投稿のみ（編集用）//checkAuth,
+app.get("/api/click-wc-data/:id/:userid", async (req, res) => {
+  let { id, userid } = req.params;
+  id = Number(id);
+  userid = Number(userid);
+  console.log("----", id, userid);
   const wcData = await db
-      .select("wc_description.id",
-          "comment",
-          "wc_position.title",
-          "wc_position.address",
-          "wc_position.created_at",
-          "hygiene_info.name",
-          "gender_type.type",
-          "wc_position.user_id",
-          "wc_description.wc_pos_id"
-      )
-      .where({"wc_description.wc_pos_id": id})
-          .andWhere({"wc_description.user_id":userid})
-      .from("wc_description")
-      .join("wc_position", { "wc_position.id": "wc_description.wc_pos_id" })
-      .join("hygiene_info", { "hygiene_info.id": "wc_description.hygiene_id" })
-      .join("gender_type", { "gender_type.id": "wc_description.gender_type_id" });
-  res.status(200).send(wcData);
-});
-
-//ピンをクリックした時の詳細表示(写真は別)checkOK
-app.get("/api/click-wc-data/:id", async (req, res) => {
-  const idParams = req.params.id;
-  console.log("----",idParams)
-  const wcData = await db
-    .select("wc_description.id",
+    .select(
+      "wc_description.id",
       "comment",
       "wc_position.title",
       "wc_position.address",
       "wc_position.created_at",
       "hygiene_info.name",
       "gender_type.type",
-        "wc_position.user_id",
-        "wc_description.wc_pos_id"
+      "wc_position.user_id",
+      "wc_description.wc_pos_id",
+    )
+    .where({ "wc_description.wc_pos_id": id })
+    .andWhere({ "wc_description.user_id": userid })
+    .from("wc_description")
+    .join("wc_position", { "wc_position.id": "wc_description.wc_pos_id" })
+    .join("hygiene_info", { "hygiene_info.id": "wc_description.hygiene_id" })
+    .join("gender_type", { "gender_type.id": "wc_description.gender_type_id" });
+  res.status(200).send(wcData);
+});
+
+//ピンをクリックした時の詳細表示(写真は別)checkOK
+app.get("/api/click-wc-data/:id", async (req, res) => {
+  const idParams = req.params.id;
+  console.log("----", idParams);
+  const wcData = await db
+    .select(
+      "wc_description.id",
+      "comment",
+      "wc_position.title",
+      "wc_position.address",
+      "wc_position.created_at",
+      "hygiene_info.name",
+      "gender_type.type",
+      "wc_description.user_id",
+      "users.name as username",
+      "wc_description.wc_pos_id",
     )
     .where("wc_description.wc_pos_id", idParams)
     .from("wc_description")
     .join("wc_position", { "wc_position.id": "wc_description.wc_pos_id" })
     .join("hygiene_info", { "hygiene_info.id": "wc_description.hygiene_id" })
-    .join("gender_type", { "gender_type.id": "wc_description.gender_type_id" });
+    .join("gender_type", { "gender_type.id": "wc_description.gender_type_id" })
+    .join("users", { "users.id": "wc_description.user_id" });
   res.status(200).send(wcData);
 });
 
