@@ -10,20 +10,20 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const navigate = useNavigate();
 
+  // ログイン画面 文字数下限値設定
   const isLoginButtonEnabled = username.length >= 4 && password.length >= 4;
   const isSignupButtonEnabled = isLoginButtonEnabled && email.length >= 4;
 
   // sing in or lon
   const handleSignupOrLoginClick = async (e) => {
-    const selectUrl =
-      e.target.textContent === '新規登録' ? '/signup' : '/login';
+    const selectUrl = e.target.textContent === '新規登録' ? 'signup' : 'login';
     const loginUser = {
       username: username,
       password: password,
       email: email,
     };
     // fetch version
-    let response = await fetch(`${selectUrl}`, {
+    let response = await fetch(`/api/${selectUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -41,7 +41,7 @@ const Login = () => {
   // logout
   const handleLogoutClick = async () => {
     // fetch version
-    let response = await fetch(`/logout`);
+    let response = await fetch(`/api/logout`);
     const data = await response.json();
     console.log('server response: ', data);
     if (response.ok) {

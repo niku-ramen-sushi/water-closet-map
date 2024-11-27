@@ -10,27 +10,22 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const bcrypt = require("bcrypt");
 
-// 静的ファイルの配信
-console.log(`👻👻👻👻👻 staticを開始`);
-
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
-
-// 環境変数の確認
-console.log(`👻👻👻👻👻 Running in ${process.env.NODE_ENV} mode`);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on: http://localhost:${PORT}/`);
 });
 
-// app.use(
-//   cors({
-//     origin: "https://water-closet-map-pmvz.onrender.com", //"http://localhost:5173", アクセス許可するオリジン
-//     credentials: true, //レスポンスヘッダーにAccess-Control-Allow-Credentials追加
-//     optionsSuccessStatus: 200, //レスポンスstatusを200に設定
-//   }),
-// );
-app.use(cors());
+const ORIGIN_URL = process.env.ORIGIN_URL || process.env.VITE_LOCALHOST;
+
+app.use(
+  cors({
+    origin: ORIGIN_URL, //アクセス許可するオリジン
+    credentials: true, //レスポンスヘッダーにAccess-Control-Allow-Credentials追加
+    optionsSuccessStatus: 200, //レスポンスstatusを200に設定
+  }),
+);
 
 app.use(express.json());
 app.use("/", express.static("../frontend/dist"));
@@ -95,7 +90,7 @@ function checkAuth(req, res, next) {
 }
 
 // ログインエンドポイント
-app.post("/login", (req, res) => {
+app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
     return res.status(400).json({
@@ -127,7 +122,8 @@ async function signup(username, email, password) {
   return newUsername;
 }
 
-app.post("/signup", async (req, res) => {
+app.post("/api/signup", async (req, res) => {
+  console.log("🚀🚀🚀🚀 req.body--->> ", req.body);
   const { username, email, password } = req.body;
   if (!username || !password) {
     res.status(400).json({
@@ -158,7 +154,7 @@ async function findUser(username) {
 }
 
 // ログアウトエンドポイント
-app.get("/logout", (req, res, next) => {
+app.get("/api/logout", (req, res, next) => {
   req.logout((err) => {
     if (err) {
       return next(err); // エラーハンドリングを適切に行う
