@@ -7,11 +7,10 @@ import App from './App.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-      <UIProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </UIProvider>
-
+    <UIProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </UIProvider>
   </StrictMode>
 );
