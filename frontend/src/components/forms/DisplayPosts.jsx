@@ -19,6 +19,7 @@ import {
 } from '@yamada-ui/react';
 import {
   hygieneListAtom,
+  isDoAPIAtom,
   isNewCardAtom,
   isNewPlaceAtom,
   isPinEditAtom,
@@ -27,9 +28,11 @@ import {
   // selectedPinIdAtom,
   selectedPinAtom,
   selectedTitleAtom,
+  userIdAtom,
 } from '../../globalState.js';
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useEffect, useState } from 'react';
+import axios from 'axios';
 // import { useSetAtom } from 'jotai/index.js';
 // import axios from 'axios';
 // import { useSetAtom } from 'jotai/index.js';
@@ -40,10 +43,21 @@ const DisplayPosts = () => {
   const [selectedPin, setSelectedPin] = useAtom(selectedPinAtom);
   const selectedTitle = useAtomValue(selectedTitleAtom);
   const isNewCard = useAtomValue(isNewCardAtom);
+  const selectedMyPin = useAtomValue(selectedMyPinAtom);
+  const userId = useAtomValue(userIdAtom);
+
+  const setIsDoAPI = useSetAtom(isDoAPIAtom);
 
   useEffect(() => {
     console.log('selectedPin', selectedPin);
   });
+  const deletePost = async () => {
+    const id = selectedMyPin[0].id;
+    const delAdd = `/api/wc-description/${id}`;
+    const delData = await axios.delete(delAdd);
+    console.log('del', delData.data);
+    setIsDoAPI(true);
+  };
 
   const allPins = selectedPin.map((pin) => {
     return (
@@ -67,12 +81,16 @@ const DisplayPosts = () => {
           </HStack>
         </CardBody>
         {/*useridあとで変数化する⭐️*/}
-        <div>
-          {pin.user_id}_{pin.username}さん
-        </div>
-        {pin.user_id === 2 ? (
+        <div>{pin.username}さん</div>
+        {pin.user_id === userId ? (
           <HStack justifyContent="flex-end">
-            <Button colorScheme="warning" size="sm">
+            <Button
+              colorScheme="warning"
+              size="sm"
+              onClick={() => {
+                deletePost();
+              }}
+            >
               削除
             </Button>
             <Button
@@ -97,7 +115,7 @@ const DisplayPosts = () => {
     <VStack w="-moz-fit-content">
       <Text fontSize="6xl">{selectedTitle.title}</Text>
       <HStack justifyContent="flex-end">
-        <Button>戻る</Button>
+        {/*<Button>戻る</Button>*/}
         {isNewCard ? (
           <Button
             onClick={() => {

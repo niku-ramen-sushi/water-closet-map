@@ -35,158 +35,158 @@ app.use(cors());
 app.use(express.json());
 app.use("/", express.static("../frontend/dist"));
 
-// 認証機能 ====================================================
-// セッション設定 express-session
-app.use(
-  session({
-    secret: process.env.COOKIE_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      maxAge: 24 * 60 * 60 * 1000, // 有効期限設定 1日
-      secure: process.env.NODE_ENV === "production", // true->httpsのみを許可、localはhttpなので切り替え
-      httpOnly: true, // javascriptからのアクセスを防ぐ
-    },
-  }),
-);
-
-// passport session
-app.use(passport.initialize());
-app.use(passport.session());
-
-// LocalStrategy(ユーザー名・パスワードでの認証)の設定
-passport.use(
-  new LocalStrategy(async (username, password, done) => {
-    const user = await find(username);
-
-    if (!user) {
-      // ユーザーが見つからない場合
-      return done(null, false);
-    }
-    // ハッシュ化したPWの突き合わせ。入力されたpasswordから、DBに保存されたハッシュ値を比較する
-    const match = await bcrypt.compare(password, user.password);
-    if (match) {
-      return done(null, user); // ログイン成功
-    } else {
-      return done(null, false); // ログイン失敗
-    }
-  }),
-);
-
-// 認証に成功した時にsessionにusernameを保存するための記述
-passport.serializeUser((user, done) => done(null, user));
-// sessionからuserを取り出して検証するための記述
-passport.deserializeUser(async (username, done) => {
-  const user = find(username);
-  done(null, user);
-});
-
-async function find(username) {
-  const [foundUser] = await db("users").where({ name: username });
-  return foundUser || {};
-}
-
-function checkAuth(req, res, next) {
-  if (req.isAuthenticated()) {
-    // isAuthenticated() 現在の認証状態を確認するメソッド
-    return next(); // 認証済みの場合、次のミドルウェアへ
-  }
-  res.status(401).json({ message: "ログインが必要です" });
-}
-
-// ログインエンドポイント
-app.post("/login", (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
-    return res.status(400).json({
-      message: "usernameとpasswordが必要です",
-    });
-  }
-
-  // 最初に設定したLocalStrategy(ユーザー名とパスワードでの認証)を使ってログイン
-  passport.authenticate("local", (err, user) => {
-    if (!user) return res.status(401).json({ message: "ログイン失敗！" });
-
-    // sessionにログイン情報を格納
-    req.logIn(user, () => {
-      return res.json({ message: `ログイン成功！ Hello, ${user.name}` });
-    });
-  })(req, res);
-});
-
-// サインアップ
-async function signup(username, email, password) {
-  const [newUsername] = await db("users")
-    .insert({
-      name: username,
-      email: email,
-      password: bcrypt.hashSync(password, 10),
-    })
-    .returning("name");
-
-  return newUsername;
-}
-
-app.post("/signup", async (req, res) => {
-  const { username, email, password } = req.body;
-  if (!username || !password) {
-    res.status(400).json({
-      message: "usernameとpasswordが必要です",
-    });
-  } else {
-    // usernameの重複check
-    const user = await findUser(username);
-    if (user.id) {
-      res.status(400).json({
-        message: "既に利用されているusernameです",
-      });
-    } else {
-      const newUserName = await signup(username, email, password);
-      res.json({
-        message: "サインアップが完了しました",
-        username: newUserName,
-      });
-    }
-  }
-});
-
-// dbからユーザー情報を検索
-async function findUser(username) {
-  const name = username;
-  const [foundUser] = await db("users").where({ name });
-  return foundUser || {};
-}
-
-// ログアウトエンドポイント
-app.get("/logout", (req, res, next) => {
-  req.logout((err) => {
-    if (err) {
-      return next(err); // エラーハンドリングを適切に行う
-    }
-
-    req.session.destroy((err) => {
-      if (err) {
-        return res
-          .status(500)
-          .json({ message: "セッション削除に失敗しました" });
-      }
-      res.clearCookie("connect.sid", {
-        secure: process.env.NODE_ENV === "production",
-        httpOnly: true,
-      });
-
-      return res.json({ message: "ログアウト成功" });
-    });
-  });
-});
-
-app.get("/api/auth_check", (req, res) => {
-  if (req.isAuthenticated()) {
-    res.json({ authenticated: true, user: req.user });
-  } else {
-    res.json({ authenticated: false });
-  }
-});
+// // 認証機能 ====================================================
+// // セッション設定 express-session
+// app.use(
+//   session({
+//     secret: process.env.COOKIE_SECRET,
+//     resave: false,
+//     saveUninitialized: false,
+//     cookie: {
+//       maxAge: 24 * 60 * 60 * 1000, // 有効期限設定 1日
+//       secure: process.env.NODE_ENV === "production", // true->httpsのみを許可、localはhttpなので切り替え
+//       httpOnly: true, // javascriptからのアクセスを防ぐ
+//     },
+//   }),
+// );
+//
+// // passport session
+// app.use(passport.initialize());
+// app.use(passport.session());
+//
+// // LocalStrategy(ユーザー名・パスワードでの認証)の設定
+// passport.use(
+//   new LocalStrategy(async (username, password, done) => {
+//     const user = await find(username);
+//
+//     if (!user) {
+//       // ユーザーが見つからない場合
+//       return done(null, false);
+//     }
+//     // ハッシュ化したPWの突き合わせ。入力されたpasswordから、DBに保存されたハッシュ値を比較する
+//     const match = await bcrypt.compare(password, user.password);
+//     if (match) {
+//       return done(null, user); // ログイン成功
+//     } else {
+//       return done(null, false); // ログイン失敗
+//     }
+//   }),
+// );
+//
+// // 認証に成功した時にsessionにusernameを保存するための記述
+// passport.serializeUser((user, done) => done(null, user));
+// // sessionからuserを取り出して検証するための記述
+// passport.deserializeUser(async (username, done) => {
+//   const user = find(username);
+//   done(null, user);
+// });
+//
+// async function find(username) {
+//   const [foundUser] = await db("users").where({ name: username });
+//   return foundUser || {};
+// }
+//
+// function checkAuth(req, res, next) {
+//   if (req.isAuthenticated()) {
+//     // isAuthenticated() 現在の認証状態を確認するメソッド
+//     return next(); // 認証済みの場合、次のミドルウェアへ
+//   }
+//   res.status(401).json({ message: "ログインが必要です" });
+// }
+//
+// // ログインエンドポイント
+// app.post("/login", (req, res) => {
+//   const { username, password } = req.body;
+//   if (!username || !password) {
+//     return res.status(400).json({
+//       message: "usernameとpasswordが必要です",
+//     });
+//   }
+//
+//   // 最初に設定したLocalStrategy(ユーザー名とパスワードでの認証)を使ってログイン
+//   passport.authenticate("local", (err, user) => {
+//     if (!user) return res.status(401).json({ message: "ログイン失敗！" });
+//
+//     // sessionにログイン情報を格納
+//     req.logIn(user, () => {
+//       return res.json({ message: `ログイン成功！ Hello, ${user.name}` });
+//     });
+//   })(req, res);
+// });
+//
+// // サインアップ
+// async function signup(username, email, password) {
+//   const [newUsername] = await db("users")
+//     .insert({
+//       name: username,
+//       email: email,
+//       password: bcrypt.hashSync(password, 10),
+//     })
+//     .returning("name");
+//
+//   return newUsername;
+// }
+//
+// app.post("/signup", async (req, res) => {
+//   const { username, email, password } = req.body;
+//   if (!username || !password) {
+//     res.status(400).json({
+//       message: "usernameとpasswordが必要です",
+//     });
+//   } else {
+//     // usernameの重複check
+//     const user = await findUser(username);
+//     if (user.id) {
+//       res.status(400).json({
+//         message: "既に利用されているusernameです",
+//       });
+//     } else {
+//       const newUserName = await signup(username, email, password);
+//       res.json({
+//         message: "サインアップが完了しました",
+//         username: newUserName,
+//       });
+//     }
+//   }
+// });
+//
+// // dbからユーザー情報を検索
+// async function findUser(username) {
+//   const name = username;
+//   const [foundUser] = await db("users").where({ name });
+//   return foundUser || {};
+// }
+//
+// // ログアウトエンドポイント
+// app.get("/logout", (req, res, next) => {
+//   req.logout((err) => {
+//     if (err) {
+//       return next(err); // エラーハンドリングを適切に行う
+//     }
+//
+//     req.session.destroy((err) => {
+//       if (err) {
+//         return res
+//           .status(500)
+//           .json({ message: "セッション削除に失敗しました" });
+//       }
+//       res.clearCookie("connect.sid", {
+//         secure: process.env.NODE_ENV === "production",
+//         httpOnly: true,
+//       });
+//
+//       return res.json({ message: "ログアウト成功" });
+//     });
+//   });
+// });
+//
+// app.get("/api/auth_check", (req, res) => {
+//   if (req.isAuthenticated()) {
+//     res.json({ authenticated: true, user: req.user });
+//   } else {
+//     res.json({ authenticated: false });
+//   }
+// });
 
 ///////////////////////////////////////////////////
 
@@ -240,7 +240,7 @@ app.get("/api/click-wc-data/:id/:userid", async (req, res) => {
   let { id, userid } = req.params;
   id = Number(id);
   userid = Number(userid);
-  console.log("----", id, userid);
+  // console.log("----", id, userid);
   const wcData = await db
     .select(
       "wc_description.id",
@@ -265,7 +265,7 @@ app.get("/api/click-wc-data/:id/:userid", async (req, res) => {
 //ピンをクリックした時の詳細表示(写真は別)checkOK
 app.get("/api/click-wc-data/:id", async (req, res) => {
   const idParams = req.params.id;
-  console.log("----", idParams);
+  // console.log("----", idParams);
   const wcData = await db
     .select(
       "wc_description.id",
@@ -370,20 +370,20 @@ app.post("/api/wc-description", async (req, res) => {
       user_id: params.user_id,
       comment: params.comment,
     })
-
     .returning("*");
   res.status(201).send(addPosition);
 });
 
 //投稿削除
 app.delete("/api/wc-description/:id", async (req, res) => {
-  const params = req.body;
-  console.log(params);
-  const addPosition = await db("wc_description")
-    .where({ id })
+  // console.log("del---start-----");
+  const id = Number(req.params.id);
+  const delData = await db("wc_description")
     .delete()
+    .where({ id })
     .returning("*");
-  res.status(201).send(addPosition);
+
+  res.status(201).send(delData);
 });
 
 //お気に入り登録用
