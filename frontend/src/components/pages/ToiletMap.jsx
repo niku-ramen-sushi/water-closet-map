@@ -26,13 +26,16 @@ import {
   isPinEditAtom,
   pinsAtom,
   selectedMyPinAtom,
+  // selectedPinIdAtom,
   selectedPinAtom,
   selectedTitleAtom,
 } from '../../globalState.js';
 import { useEffect } from 'react';
 import { useAtom } from 'jotai';
+// import {useAtom} from "jotai/index.js";
 import axios from 'axios';
 import DisplayPosts from '../forms/DisplayPosts.jsx';
+import GoogleMap from '../maps/GoogleMap.jsx';
 
 function ToiletMap() {
   const [pins, setPins] = useAtom(pinsAtom);
@@ -51,24 +54,18 @@ function ToiletMap() {
   };
 
   const getDetailData = async (id) => {
-    console.log('all ID', id);
     const resData = await axios.get(`/api/click-wc-data/${id}`);
-
-    console.log('all--', resData.data);
+    console.log('all_selectedPin---', resData.data);
     setSelectedPin(resData.data);
   };
 
   const getMyDetailData = async (id) => {
-    console.log('my ID', id);
     const resData = await axios.get(`/api/click-wc-data/${id}/2`); //⭐️1を変数化する
-
-    console.log('my--', resData.data);
+    console.log('myData:', resData.data);
     if (resData.data.length !== 0) {
       setIsNewCard(false);
       setSelectedMyPin(resData.data);
-      console.log('myあり');
     } else {
-      console.log('myなし');
       setIsNewCard(true);
       setSelectedMyPin([
         {
@@ -126,10 +123,8 @@ function ToiletMap() {
                     // setIsPinEdit(true);
                     setSelectedTitle({ id: pin.id, title: pin.title });
                     setIsPinEdit(false);
-                    console.log('クリック--------');
                     getDetailData(pin.id);
                     getMyDetailData(pin.id);
-                    console.log('ここまで---------');
                   }}
                 >
                   一覧
@@ -151,8 +146,12 @@ function ToiletMap() {
 
       <GridItem>
         <VStack h="100%" justify="space-between">
-          <div></div>
-          <Center w="100%">{/*<CreatePinForm />*/}</Center>
+          <div>
+            <GoogleMap pins={pins} />
+          </div>
+          <Center w="100%">
+            <CreatePinForm />
+          </Center>
           <Center w="100%">
             {/*<DescriptionsForm />*/}
             {isPinEdit ? <DescriptionsForm /> : <DisplayPosts />}

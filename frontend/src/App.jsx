@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import Login from './components/pages/Login.jsx';
 import Notfound from './components/pages/Notfound.jsx';
 import ProtectedRoute from './components/auths/ProtectedRoute.jsx';
+import GoogleMap from './components/maps/GoogleMap.jsx';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route path="/google_map" element={<GoogleMap />} />
       <Route path="*" element={<Notfound />} />
     </Routes>
   );

@@ -4,6 +4,7 @@
     "start": "npm run start --prefix backend"
   },
   "dependencies": {
+    "@vis.gl/react-google-maps": "^1.4.1",
     "prettier": "^3.3.3"
   }
 }
