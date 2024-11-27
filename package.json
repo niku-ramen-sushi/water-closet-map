@@ -5,6 +5,7 @@
   },
   "dependencies": {
     "@vis.gl/react-google-maps": "^1.4.1",
-    "prettier": "^3.3.3"
+    "prettier": "^3.3.3",
+    "dotenv": "^16.4.5"
   }
 }
