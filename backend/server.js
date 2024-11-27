@@ -23,13 +23,14 @@ app.listen(PORT, () => {
   console.log(`Server running on: http://localhost:${PORT}/`);
 });
 
-app.use(
-  cors({
-    origin: "http://localhost:5173", //アクセス許可するオリジン
-    credentials: true, //レスポンスヘッダーにAccess-Control-Allow-Credentials追加
-    optionsSuccessStatus: 200, //レスポンスstatusを200に設定
-  }),
-);
+// app.use(
+//   cors({
+//     origin: "https://water-closet-map-pmvz.onrender.com", //"http://localhost:5173", アクセス許可するオリジン
+//     credentials: true, //レスポンスヘッダーにAccess-Control-Allow-Credentials追加
+//     optionsSuccessStatus: 200, //レスポンスstatusを200に設定
+//   }),
+// );
+app.use(cors());
 
 app.use(express.json());
 app.use("/", express.static("../frontend/dist"));
