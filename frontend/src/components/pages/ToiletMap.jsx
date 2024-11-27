@@ -16,7 +16,7 @@ import {
 
 // 既存コンポーネントのインストール
 import DescriptionsForm from '../forms/DescriptionsForm.jsx';
-import CreatePinForm from '../forms/CreatePinForm.jsx';
+// import CreatePinForm from '../forms/CreatePinForm.jsx';
 import CreatePinButton from '../buttons/CreatePinButton.jsx';
 
 import { useSetAtom } from 'jotai';
@@ -149,9 +149,9 @@ function ToiletMap() {
           <div>
             <GoogleMap pins={pins} />
           </div>
-          <Center w="100%">
-            <CreatePinForm />
-          </Center>
+          {/*<Center w="100%">*/}
+          {/*  <CreatePinForm />*/}
+          {/*</Center>*/}
           <Center w="100%">
             {/*<DescriptionsForm />*/}
             {isPinEdit ? <DescriptionsForm /> : <DisplayPosts />}
