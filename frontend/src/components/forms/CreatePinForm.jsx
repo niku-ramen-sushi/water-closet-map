@@ -1,12 +1,12 @@
-import { Box, Button, FormControl, Input, VStack } from "@yamada-ui/react";
-import { isCreatePinAtom, pinsAtom } from "../../globalState.js";
-import { useAtom } from "jotai";
-import { useState } from "react";
+import { Box, Button, FormControl, Input, VStack } from '@yamada-ui/react';
+import { isCreatePinAtom, pinsAtom } from '../../globalState.js';
+import { useAtom } from 'jotai';
+import { useState } from 'react';
 
 const CreatePinForm = () => {
   const [isCreatePin, setIsCreatePin] = useAtom(isCreatePinAtom);
   const [pins, setPins] = useAtom(pinsAtom);
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState('');
 
   return isCreatePin ? (
     <Box
@@ -34,8 +34,8 @@ const CreatePinForm = () => {
             colorScheme="primary"
             variant="solid"
             onClick={() => {
-              console.log("on clicked");
-              setIsCreatePin(false);
+              console.log('on clicked');
+              // setIsCreatePin(false);
               // ここでピンデータを追加したい。今はステートで代用
               setPins([...pins, { title: inputValue }]);
             }}
