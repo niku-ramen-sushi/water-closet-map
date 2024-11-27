@@ -231,6 +231,7 @@ app.get("/api/click-wc-data/:id/:userid", checkAuth, async (req, res) => {
   let { id, userid } = req.params;
   id = Number(id);
   userid = Number(userid);
+});
 //ピンをクリックした時の詳細表示(写真は別)checkOK-自分の投稿のみ（編集用）//checkAuth,
 app.get("/api/click-wc-data/:id/:userid", async (req, res) => {
   let { id, userid } = req.params;
