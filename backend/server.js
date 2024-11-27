@@ -125,7 +125,6 @@ async function signup(username, email, password) {
 }
 
 app.post("/api/signup", async (req, res) => {
-  console.log("🚀🚀🚀🚀 req.body--->> ", req.body);
   const { username, email, password } = req.body;
   if (!username || !password) {
     res.status(400).json({
@@ -179,7 +178,6 @@ app.get("/api/logout", (req, res, next) => {
 });
 
 app.get("/api/auth_check", (req, res) => {
-  console.log("🚀🚀🚀🚀 /api/auth_checkの中--->> ", req);
   if (req.isAuthenticated()) {
     res.json({ authenticated: true, user: req.user });
   } else {

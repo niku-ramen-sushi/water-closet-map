@@ -31,8 +31,7 @@ const Login = () => {
       body: JSON.stringify(loginUser),
       credentials: 'include', // クッキーを含める
     });
-    const data = await response.json();
-    console.log('server response: ', data);
+
     if (response.ok) {
       navigate('/map');
     }
