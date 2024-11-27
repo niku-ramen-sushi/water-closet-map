@@ -12,7 +12,7 @@ import {
 } from '@vis.gl/react-google-maps';
 
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { latLngAtom } from '../../globalState.js';
 
 const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
@@ -20,17 +20,17 @@ const GoogleMap = ({ pins }) => {
   const midlandPosition = { lat: 35.1698072, lng: 136.885171621167 };
   const [isOpen, setIsOpen] = useState(false);
   const [markerRef, marker] = useAdvancedMarkerRef();
-  const setLatLng = useSetAtom(latLngAtom);
-  const latLng = useAtomValue(latLngAtom);
+  const setlatLun = useSetAtom(latLngAtom);
+  const latLun = useAtomValue(latLngAtom);
 
-  console.log('🚀🚀🚀🚀 --->> ', latLng);
+  console.log('👻👻👻👻👻', latLun, '👻👻👻👻👻');
   return (
     <APIProvider apiKey={API_KEY}>
       <div style={{ height: '100vh', width: '100%' }}>
         <Map
           defaultZoom={18}
           defaultCenter={midlandPosition}
-          onClick={(e) => setLatLng(e.detail.latLng)}
+          onClick={(e) => setlatLun(e.detail.latLng)}
           // onCameraChanged={(ev) =>
           //   console.log(
           //     'camera changed:',
