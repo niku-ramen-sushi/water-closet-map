@@ -6,6 +6,8 @@ import {
   HStack,
   VStack,
   Center,
+  useDisclosure,
+  Text,
 } from '@yamada-ui/react';
 import {
   Accordion,
@@ -13,12 +15,29 @@ import {
   AccordionLabel,
   AccordionPanel,
 } from '@yamada-ui/react';
+import {
+  Drawer,
+  DrawerOverlay,
+  DrawerCloseButton,
+  DrawerHeader,
+  DrawerBody,
+  DrawerFooter,
+} from '@yamada-ui/react';
+import {
+  Dialog,
+  DialogOverlay,
+  DialogCloseButton,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
+} from '@yamada-ui/react';
 
-// 既存コンポーネントのインストール
+// 既存コンポーネントのインポート
 import DescriptionsForm from '../forms/DescriptionsForm.jsx';
 import CreatePinForm from '../forms/CreatePinForm.jsx';
 import CreatePinButton from '../buttons/CreatePinButton.jsx';
 
+// Jotai関連のインポート
 import { useSetAtom } from 'jotai';
 import {
   hygieneListAtom,
@@ -95,68 +114,129 @@ function ToiletMap() {
     getHygieneList();
   }, []);
 
-  function ToiletAccordion() {
+  function ToiletAccordion({ onOpen }) {
     return (
-      <Accordion>
-        {pins.map((pin) => (
-          <AccordionItem key={`accordion_${pin.id}`}>
-            <AccordionLabel
-              onClick={() => {
-                setIsPinEdit(false);
-              }}
-            >
-              {pin.title}
-            </AccordionLabel>
-            <AccordionPanel>
-              <HStack spacing={2} align="center">
-                <Button
-                  onClick={() => {
-                    // setIsPinEdit(true);
-                    setSelectedTitle({ id: pin.id, title: pin.title });
-                    getMyDetailData(pin.id);
-                  }}
-                >
-                  getMyDetailData
-                </Button>
-                <Button
-                  onClick={() => {
-                    // setIsPinEdit(true);
-                    setSelectedTitle({ id: pin.id, title: pin.title });
-                    setIsPinEdit(false);
-                    getDetailData(pin.id);
-                    getMyDetailData(pin.id);
-                  }}
-                >
-                  一覧
-                </Button>
-              </HStack>
-            </AccordionPanel>
-          </AccordionItem>
-        ))}
-      </Accordion>
+      <>
+        <Accordion>
+          {pins.map((pin) => (
+            <AccordionItem key={`accordion_${pin.id}`}>
+              <AccordionLabel
+                onClick={() => {
+                  setIsPinEdit(false);
+                }}
+              >
+                {pin.title}
+              </AccordionLabel>
+              <AccordionPanel>
+                <HStack spacing={2} align="center">
+                  <Button
+                    onClick={() => {
+                      // setIsPinEdit(true);
+                      setSelectedTitle({ id: pin.id, title: pin.title });
+                      getMyDetailData(pin.id);
+                    }}
+                  >
+                    getMyDetailData
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      // setIsPinEdit(true);
+                      setSelectedTitle({ id: pin.id, title: pin.title });
+                      setIsPinEdit(false);
+                      getDetailData(pin.id);
+                      getMyDetailData(pin.id);
+                      onOpen();
+                    }}
+                  >
+                    一覧
+                  </Button>
+                </HStack>
+              </AccordionPanel>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </>
+    );
+  }
+
+  function DetailDrawer({ isOpen, onClose }) {
+    return (
+      <div>
+        <Drawer isOpen={isOpen} onClose={onClose} size="lg">
+          <DrawerHeader>トイレ詳細情報</DrawerHeader>
+
+          <DrawerBody>
+            <DisplayPosts />
+          </DrawerBody>
+
+          <DrawerFooter>
+            <Button variant="ghost" onClick={onClose}>
+              とじる
+            </Button>
+          </DrawerFooter>
+        </Drawer>
+      </div>
+    );
+  }
+
+  function FormDialog({ isOpen, onOpen, onClose }) {
+    return (
+      <>
+        <Dialog
+          size="lg"
+          isOpen={isOpen}
+          onClose={onClose}
+          // header="投稿追加画面"
+          // cancel="キャンセル"
+          // onCancel={onClose}
+          // success="投稿"
+          // onSuccess={onClose}
+        >
+          <DescriptionsForm />
+        </Dialog>
+      </>
+    );
+  }
+
+  function OverLapper() {
+    const drawerDisclosure = useDisclosure();
+    const dialogDisclosure = useDisclosure();
+    // isPinEditの値が変更されたときにダイアログを開く
+    // isPinEditってなんだろう
+    useEffect(() => {
+      if (isPinEdit) {
+        dialogDisclosure.onOpen();
+      }
+    }, [isPinEdit]);
+
+    return (
+      <>
+        <ToiletAccordion onOpen={drawerDisclosure.onOpen} />
+
+        <DetailDrawer
+          isOpen={drawerDisclosure.isOpen}
+          onClose={drawerDisclosure.onClose}
+        />
+
+        <FormDialog
+          isOpen={dialogDisclosure.isOpen}
+          onOpen={dialogDisclosure.onOpen}
+          onClose={dialogDisclosure.onClose}
+        />
+      </>
     );
   }
 
   return (
     <Grid templateColumns="300px 1fr " gap={4}>
+      {/*幅300のグリッドと、1frame?の２つのグリッドができる*/}
       <GridItem>
         <CreatePinButton />
-        <ToiletAccordion />
+        <OverLapper isPinEdit={isPinEdit} />
       </GridItem>
 
       <GridItem>
-        <VStack h="100%" justify="space-between">
-          <div>
-            <GoogleMap pins={pins} />
-          </div>
-          <Center w="100%">
-            <CreatePinForm />
-          </Center>
-          <Center w="100%">
-            {/*<DescriptionsForm />*/}
-            {isPinEdit ? <DescriptionsForm /> : <DisplayPosts />}
-          </Center>
-        </VStack>
+        <Text size="lg">ここにGoogleマップ</Text>
       </GridItem>
     </Grid>
   );
