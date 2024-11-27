@@ -249,9 +249,11 @@ app.get("/api/click-wc-data/:id/:userid", async (req, res) => {
       "wc_position.address",
       "wc_position.created_at",
       "hygiene_info.name",
+      "hygiene_info.id as hygiene_id",
       "gender_type.type",
       "wc_position.user_id",
       "wc_description.wc_pos_id",
+      "gender_type.id as gender_id",
     )
     .where({ "wc_description.wc_pos_id": id })
     .andWhere({ "wc_description.user_id": userid })
@@ -274,10 +276,12 @@ app.get("/api/click-wc-data/:id", async (req, res) => {
       "wc_position.address",
       "wc_position.created_at",
       "hygiene_info.name",
+      "hygiene_info.id as hygiene_id",
       "gender_type.type",
       "wc_description.user_id",
       "users.name as username",
       "wc_description.wc_pos_id",
+      "gender_type.id as gender_id",
     )
     .where("wc_description.wc_pos_id", idParams)
     .from("wc_description")
@@ -384,6 +388,23 @@ app.delete("/api/wc-description/:id", async (req, res) => {
     .returning("*");
 
   res.status(201).send(delData);
+});
+
+//投稿修正
+app.patch("/api/wc-description", async (req, res) => {
+  const params = req.body;
+  console.log("patch-----params:", params);
+  const addPosition = await db("wc_description")
+    .update({
+      hygiene_id: params.hygiene_id,
+      wc_pos_id: params.wc_pos_id,
+      gender_type_id: params.gender_type_id,
+      user_id: params.user_id,
+      comment: params.comment,
+    })
+    .where({ id: params.id })
+    .returning("*");
+  res.status(201).send(addPosition);
 });
 
 //お気に入り登録用

@@ -15,3 +15,4 @@ export const isNewCardAtom = atom(false);
 export const latLngAtom = atom({ lat: 88.8888, lng: 99.9999 });
 export const isDoAPIAtom = atom(false);
 export const userIdAtom = atom(1);
+export const isEditDescriptionAtom = atom(false);

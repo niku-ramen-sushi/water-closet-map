@@ -18,10 +18,9 @@ import {
   VStack,
 } from '@yamada-ui/react';
 import {
-  hygieneListAtom,
   isDoAPIAtom,
+  isEditDescriptionAtom,
   isNewCardAtom,
-  isNewPlaceAtom,
   isPinEditAtom,
   selectedMyPinAtom,
   // pinsAtom,
@@ -47,6 +46,7 @@ const DisplayPosts = () => {
   const userId = useAtomValue(userIdAtom);
 
   const setIsDoAPI = useSetAtom(isDoAPIAtom);
+  const setIsEditDescription = useSetAtom(isEditDescriptionAtom);
 
   useEffect(() => {
     console.log('selectedPin', selectedPin);
@@ -98,6 +98,8 @@ const DisplayPosts = () => {
               size="sm"
               onClick={() => {
                 setIsPinEdit(true);
+                setIsEditDescription(true);
+                console.log('編集ぼたん');
                 // getMyDetailData(true);
               }}
             >

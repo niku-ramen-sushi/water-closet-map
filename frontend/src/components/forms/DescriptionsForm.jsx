@@ -16,6 +16,7 @@ import {
 import {
   hygieneListAtom,
   isDoAPIAtom,
+  isEditDescriptionAtom,
   isNewCardAtom,
   isNewPlaceAtom,
   isPinEditAtom,
@@ -50,8 +51,12 @@ const DescriptionsForm = () => {
 
   const setIsDoAPI = useSetAtom(isDoAPIAtom);
   const userId = useAtomValue(userIdAtom);
+  const [isEditDescription, setIsEditDescription] = useAtom(
+    isEditDescriptionAtom
+  );
 
   const addData = async () => {
+    console.log(level, 'level');
     const levelId = hygieneList.filter((obj) => obj.name === level)[0].id;
     console.log('postAPI:', level, levelId);
     let pinId;
@@ -75,24 +80,39 @@ const DescriptionsForm = () => {
     } else {
       pinId = selectedTitle.id;
     }
-
-    //投稿する
     const url = '/api/wc-description';
-    const addObj = {
-      hygiene_id: levelId,
-      wc_pos_id: pinId,
-      gender_type_id: Number(type),
-      user_id: userId,
-      comment: comment ? comment : ' ',
-    };
-    const resData = await axios.post(url, addObj);
-    console.log('postData', resData.data);
+    //投稿する
+    if (isEditDescription) {
+      //修正
+      const addObj = {
+        hygiene_id: levelId,
+        wc_pos_id: pinId,
+        gender_type_id: Number(type),
+        user_id: userId,
+        comment: comment ? comment : ' ',
+        id: selectedMyPin[0].id,
+      };
+      const resData = await axios.patch(url, addObj);
+      console.log('--patchData', resData.data);
+    } else {
+      //新規
+      const addObj = {
+        hygiene_id: levelId,
+        wc_pos_id: pinId,
+        gender_type_id: Number(type),
+        user_id: userId,
+        comment: comment ? comment : ' ',
+      };
+      const resData = await axios.post(url, addObj);
+      console.log('postData', resData.data);
+    }
 
-    setLevel('レベルを選択');
+    setLevel('');
     setType(null);
     setComment('');
     setTitle('');
 
+    setIsEditDescription(false);
     setIsDoAPI(true);
     setIsPinEdit(false);
     setIsNewPlace(false);
@@ -138,12 +158,12 @@ const DescriptionsForm = () => {
 
           <FormControl
             isRequired
-            label="種類"
+            label={`種類 `}
             errorMessage="種類の選択は必須です"
           >
             <RadioGroup
               direction="row"
-              defaultValue={pin.type}
+              // defaultValue={isEditDescription ? String(pin.gender_id) : '1'}
               onChange={(e) => setType(e)}
             >
               <Radio size="sm" value="1">
@@ -182,7 +202,8 @@ const DescriptionsForm = () => {
           <FormControl label="詳細">
             <Textarea
               placeholder="例：綺麗な状態ですが、やや狭いです。"
-              defaultValue={pin.comment}
+              // defaultValue={pin.comment}
+              defaultValue={comment}
               value={comment}
               onChange={(e) => {
                 setComment(e.target.value);
