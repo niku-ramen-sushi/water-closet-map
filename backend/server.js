@@ -24,14 +24,11 @@ app.listen(PORT, () => {
 });
 
 app.use(
-  cors(
-    {},
-    //     {
-    //   origin: "http://localhost:5173", //アクセス許可するオリジン
-    //   credentials: true, //レスポンスヘッダーにAccess-Control-Allow-Credentials追加
-    //   optionsSuccessStatus: 200, //レスポンスstatusを200に設定
-    // }
-  ),
+  cors({
+    origin: "http://localhost:5173", //アクセス許可するオリジン
+    credentials: true, //レスポンスヘッダーにAccess-Control-Allow-Credentials追加
+    optionsSuccessStatus: 200, //レスポンスstatusを200に設定
+  }),
 );
 
 app.use(express.json());
@@ -46,7 +43,7 @@ app.use(
     saveUninitialized: false,
     cookie: {
       maxAge: 24 * 60 * 60 * 1000, // 有効期限設定 1日
-      secure: false, // true->httpsのみを許可、localはhttpなので切り替え
+      secure: process.env.NODE_ENV === "production", // true->httpsのみを許可、localはhttpなので切り替え
       httpOnly: true, // javascriptからのアクセスを防ぐ
     },
   }),
@@ -59,14 +56,14 @@ app.use(passport.session());
 // LocalStrategy(ユーザー名・パスワードでの認証)の設定
 passport.use(
   new LocalStrategy(async (username, password, done) => {
-    const user = find(username);
+    const user = await find(username);
 
     if (!user) {
       // ユーザーが見つからない場合
       return done(null, false);
     }
     // ハッシュ化したPWの突き合わせ。入力されたpasswordから、DBに保存されたハッシュ値を比較する
-    const match = await bcrypt.compare(password, user.hashed_password);
+    const match = await bcrypt.compare(password, user.password);
     if (match) {
       return done(null, user); // ログイン成功
     } else {
@@ -84,7 +81,7 @@ passport.deserializeUser(async (username, done) => {
 });
 
 async function find(username) {
-  const [foundUser] = await db("users").where({ username });
+  const [foundUser] = await db("users").where({ name: username });
   return foundUser || {};
 }
 
@@ -111,28 +108,26 @@ app.post("/login", (req, res) => {
 
     // sessionにログイン情報を格納
     req.logIn(user, () => {
-      return res.json({ message: `ログイン成功！ Hello, ${user.username}` });
+      return res.json({ message: `ログイン成功！ Hello, ${user.name}` });
     });
   })(req, res);
 });
 
 // サインアップ
-async function signup(username, password) {
+async function signup(username, email, password) {
   const [newUsername] = await db("users")
     .insert({
       name: username,
-      email: "temp@mail.com",
+      email: email,
       password: bcrypt.hashSync(password, 10),
     })
     .returning("name");
 
-  console.log("🚀🚀🚀🚀 newUsername--->> ", newUsername);
   return newUsername;
 }
 
 app.post("/signup", async (req, res) => {
-  console.log("---signup---", req.body);
-  const { username, password } = req.body;
+  const { username, email, password } = req.body;
   if (!username || !password) {
     res.status(400).json({
       message: "usernameとpasswordが必要です",
@@ -145,7 +140,7 @@ app.post("/signup", async (req, res) => {
         message: "既に利用されているusernameです",
       });
     } else {
-      const newUserName = await signup(username, password);
+      const newUserName = await signup(username, email, password);
       res.json({
         message: "サインアップが完了しました",
         username: newUserName,
@@ -156,14 +151,31 @@ app.post("/signup", async (req, res) => {
 
 // dbからユーザー情報を検索
 async function findUser(username) {
-  const [foundUser] = await db("users").where({ name: username });
+  const name = username;
+  const [foundUser] = await db("users").where({ name });
   return foundUser || {};
 }
 
 // ログアウトエンドポイント
-app.get("/logout", (req, res) => {
-  req.logout(() => {
-    res.json({ message: "ログアウト成功" });
+app.get("/logout", (req, res, next) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err); // エラーハンドリングを適切に行う
+    }
+
+    req.session.destroy((err) => {
+      if (err) {
+        return res
+          .status(500)
+          .json({ message: "セッション削除に失敗しました" });
+      }
+      res.clearCookie("connect.sid", {
+        secure: process.env.NODE_ENV === "production",
+        httpOnly: true,
+      });
+
+      return res.json({ message: "ログアウト成功" });
+    });
   });
 });
 
@@ -197,7 +209,6 @@ app.get("/api/users/:id", async (req, res) => {
 //清潔度の選択用に使用checkOK
 app.get("/api/hygiene", async (req, res) => {
   const hygieneData = await db.select("*").from("hygiene_info");
-  console.log("====", hygieneData);
   res.status(200).send(hygieneData);
 });
 
@@ -215,6 +226,12 @@ app.get("/api/all-wc-position", async (req, res) => {
   res.status(200).send(allWcPositionData);
 });
 
+//ピンをクリックした時の詳細表示(写真は別)checkOK-自分の投稿のみ（編集用）
+app.get("/api/click-wc-data/:id/:userid", checkAuth, async (req, res) => {
+  let { id, userid } = req.params;
+  id = Number(id);
+  userid = Number(userid);
+});
 //ピンをクリックした時の詳細表示(写真は別)checkOK-自分の投稿のみ（編集用）//checkAuth,
 app.get("/api/click-wc-data/:id/:userid", async (req, res) => {
   let { id, userid } = req.params;

@@ -11,6 +11,7 @@
     "setup": "npm install && npm run build"
   },
   "dependencies": {
+    "@vis.gl/react-google-maps": "^1.4.1",
     "@vitejs/plugin-react": "^4.3.3",
     "@yamada-ui/lucide": "^1.8.1",
     "@yamada-ui/react": "^1.6.4",
