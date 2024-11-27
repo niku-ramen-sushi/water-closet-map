@@ -231,6 +231,12 @@ app.get("/api/click-wc-data/:id/:userid", checkAuth, async (req, res) => {
   let { id, userid } = req.params;
   id = Number(id);
   userid = Number(userid);
+//ピンをクリックした時の詳細表示(写真は別)checkOK-自分の投稿のみ（編集用）//checkAuth,
+app.get("/api/click-wc-data/:id/:userid", async (req, res) => {
+  let { id, userid } = req.params;
+  id = Number(id);
+  userid = Number(userid);
+  console.log("----", id, userid);
   const wcData = await db
     .select(
       "wc_description.id",
@@ -255,6 +261,7 @@ app.get("/api/click-wc-data/:id/:userid", checkAuth, async (req, res) => {
 //ピンをクリックした時の詳細表示(写真は別)checkOK
 app.get("/api/click-wc-data/:id", async (req, res) => {
   const idParams = req.params.id;
+  console.log("----", idParams);
   const wcData = await db
     .select(
       "wc_description.id",
@@ -264,14 +271,16 @@ app.get("/api/click-wc-data/:id", async (req, res) => {
       "wc_position.created_at",
       "hygiene_info.name",
       "gender_type.type",
-      "wc_position.user_id",
+      "wc_description.user_id",
+      "users.name as username",
       "wc_description.wc_pos_id",
     )
     .where("wc_description.wc_pos_id", idParams)
     .from("wc_description")
     .join("wc_position", { "wc_position.id": "wc_description.wc_pos_id" })
     .join("hygiene_info", { "hygiene_info.id": "wc_description.hygiene_id" })
-    .join("gender_type", { "gender_type.id": "wc_description.gender_type_id" });
+    .join("gender_type", { "gender_type.id": "wc_description.gender_type_id" })
+    .join("users", { "users.id": "wc_description.user_id" });
   res.status(200).send(wcData);
 });
 

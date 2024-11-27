@@ -22,23 +22,29 @@ import CreatePinButton from '../buttons/CreatePinButton.jsx';
 import { useSetAtom } from 'jotai';
 import {
   hygieneListAtom,
+  isNewCardAtom,
   isPinEditAtom,
   pinsAtom,
+  selectedMyPinAtom,
   // selectedPinIdAtom,
   selectedPinAtom,
+  selectedTitleAtom,
 } from '../../globalState.js';
 import { useEffect } from 'react';
 import { useAtom } from 'jotai';
 // import {useAtom} from "jotai/index.js";
 import axios from 'axios';
+import DisplayPosts from '../forms/DisplayPosts.jsx';
 
 function ToiletMap() {
   const [pins, setPins] = useAtom(pinsAtom);
 
-  const setIsPinEdit = useSetAtom(isPinEditAtom);
-  // const  setSelectedPinId = useSetAtom(selectedPinIdAtom);
+  const [isPinEdit, setIsPinEdit] = useAtom(isPinEditAtom);
   const setSelectedPin = useSetAtom(selectedPinAtom);
   const setHygieneList = useSetAtom(hygieneListAtom);
+  const setSelectedTitle = useSetAtom(selectedTitleAtom);
+  const setSelectedMyPin = useSetAtom(selectedMyPinAtom);
+  const setIsNewCard = useSetAtom(isNewCardAtom);
 
   const getAllPins = async () => {
     const resData = await axios.get('/api/all-wc-position');
@@ -48,30 +54,32 @@ function ToiletMap() {
 
   const getDetailData = async (id) => {
     const resData = await axios.get(`/api/click-wc-data/${id}`);
-    console.log(resData.data);
+    console.log('all_selectedPin---', resData.data);
     setSelectedPin(resData.data);
   };
 
   const getMyDetailData = async (id) => {
     const resData = await axios.get(`/api/click-wc-data/${id}/2`); //⭐️1を変数化する
-    console.log(resData.data);
-    const res =
-      resData.data.length !== 0
-        ? resData.data
-        : [
-            {
-              address: null,
-              comment: '',
-              created_at: '',
-              id: null,
-              name: '',
-              title: '',
-              type: '',
-              user_id: 2,
-              wc_pos_id: null,
-            },
-          ];
-    setSelectedPin(res);
+    console.log('myData:', resData.data);
+    if (resData.data.length !== 0) {
+      setIsNewCard(false);
+      setSelectedMyPin(resData.data);
+    } else {
+      setIsNewCard(true);
+      setSelectedMyPin([
+        {
+          address: null,
+          comment: '',
+          created_at: '',
+          id: null,
+          name: '',
+          title: '',
+          type: '',
+          user_id: 2,
+          wc_pos_id: null,
+        },
+      ]);
+    }
   };
 
   //App.jsに入れたい⭐️
@@ -91,12 +99,19 @@ function ToiletMap() {
       <Accordion>
         {pins.map((pin) => (
           <AccordionItem key={`accordion_${pin.id}`}>
-            <AccordionLabel>{pin.title}</AccordionLabel>
+            <AccordionLabel
+              onClick={() => {
+                setIsPinEdit(false);
+              }}
+            >
+              {pin.title}
+            </AccordionLabel>
             <AccordionPanel>
               <HStack spacing={2} align="center">
                 <Button
                   onClick={() => {
-                    setIsPinEdit(true);
+                    // setIsPinEdit(true);
+                    setSelectedTitle({ id: pin.id, title: pin.title });
                     getMyDetailData(pin.id);
                   }}
                 >
@@ -104,8 +119,11 @@ function ToiletMap() {
                 </Button>
                 <Button
                   onClick={() => {
-                    setIsPinEdit(true);
+                    // setIsPinEdit(true);
+                    setSelectedTitle({ id: pin.id, title: pin.title });
+                    setIsPinEdit(false);
                     getDetailData(pin.id);
+                    getMyDetailData(pin.id);
                   }}
                 >
                   一覧
@@ -132,7 +150,8 @@ function ToiletMap() {
             <CreatePinForm />
           </Center>
           <Center w="100%">
-            <DescriptionsForm />
+            {/*<DescriptionsForm />*/}
+            {isPinEdit ? <DescriptionsForm /> : <DisplayPosts />}
           </Center>
         </VStack>
       </GridItem>
