@@ -226,12 +226,14 @@ app.get("/api/all-wc-position", async (req, res) => {
   res.status(200).send(allWcPositionData);
 });
 
-//ピンをクリックした時の詳細表示(写真は別)checkOK-自分の投稿のみ（編集用）
-app.get("/api/click-wc-data/:id/:userid", checkAuth, async (req, res) => {
-  let { id, userid } = req.params;
-  id = Number(id);
-  userid = Number(userid);
-});
+// //ピンをクリックした時の詳細表示(写真は別)checkOK-自分の投稿のみ（編集用）
+// app.get("/api/click-wc-data/:id/:userid", checkAuth, async (req, res) => {
+//   let { id, userid } = req.params;
+//   id = Number(id);
+//   userid = Number(userid);
+//
+//
+// });
 //ピンをクリックした時の詳細表示(写真は別)checkOK-自分の投稿のみ（編集用）//checkAuth,
 app.get("/api/click-wc-data/:id/:userid", async (req, res) => {
   let { id, userid } = req.params;
@@ -341,5 +343,46 @@ app.get("/api/wc-info", async (req, res) => {
 // })
 
 //新たなトイレ情報登録用
+app.post("/api/wc-position", async (req, res) => {
+  const params = req.body;
+  const addPosition = await db("wc_position")
+    .insert({
+      user_id: params.user_id,
+      title: params.title,
+      address: params.address,
+      latitude: params.latitude,
+      longitude: params.longitude,
+      created_at: new Date(),
+    })
+    .returning("*");
+  res.status(201).send(addPosition);
+});
+
+app.post("/api/wc-description", async (req, res) => {
+  const params = req.body;
+  console.log(params);
+  const addPosition = await db("wc_description")
+    .insert({
+      hygiene_id: params.hygiene_id,
+      wc_pos_id: params.wc_pos_id,
+      gender_type_id: params.gender_type_id,
+      user_id: params.user_id,
+      comment: params.comment,
+    })
+
+    .returning("*");
+  res.status(201).send(addPosition);
+});
+
+//投稿削除
+app.delete("/api/wc-description/:id", async (req, res) => {
+  const params = req.body;
+  console.log(params);
+  const addPosition = await db("wc_description")
+    .where({ id })
+    .delete()
+    .returning("*");
+  res.status(201).send(addPosition);
+});
 
 //お気に入り登録用
