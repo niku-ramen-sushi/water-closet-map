@@ -1,31 +1,128 @@
+'use client';
+
+import { useState, useRef, useEffect, useCallback } from 'react';
 import {
   APIProvider,
   Map,
-  MapCameraChangedEvent,
+  useMap,
+  AdvancedMarker,
+  Pin,
+  InfoWindow,
+  useAdvancedMarkerRef,
 } from '@vis.gl/react-google-maps';
 
+import { MarkerClusterer } from '@googlemaps/markerclusterer';
+
 const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
-const GoogleMap = () => (
-  <APIProvider
-    apiKey={API_KEY}
-    onLoad={() => console.log('Maps API has loaded.')}
-  >
-    <Map
-      defaultZoom={13}
-      defaultCenter={{ lat: -33.860664, lng: 151.208138 }}
-      onCameraChanged={(ev) =>
-        console.log(
-          'camera changed:',
-          ev.detail.center,
-          'zoom:',
-          ev.detail.zoom
-        )
+const GoogleMap = ({ pins }) => {
+  const midlandPosition = { lat: 35.1698072, lng: 136.885171621167 };
+  const [isOpen, setIsOpen] = useState(false);
+  const [markerRef, marker] = useAdvancedMarkerRef();
+
+  return (
+    <APIProvider apiKey={API_KEY}>
+      <div style={{ height: '100vh', width: '100%' }}>
+        <Map
+          defaultZoom={18}
+          defaultCenter={midlandPosition}
+          onCameraChanged={(ev) =>
+            console.log(
+              'camera changed:',
+              ev.detail.center,
+              'zoom:',
+              ev.detail.zoom
+            )
+          }
+          mapId="da37f3254c6a6d1c"
+        >
+          <AdvancedMarker
+            ref={markerRef}
+            position={midlandPosition}
+            onClick={() => setIsOpen(true)}
+          >
+            <Pin />
+          </AdvancedMarker>
+
+          {isOpen && (
+            <InfoWindow
+              // position={{ lat: 35.17, lng: 136.885171621167 }}
+              anchor={marker}
+              onCloseClick={() => setIsOpen(false)}
+            >
+              <p>InfoWindow</p>
+            </InfoWindow>
+          )}
+          <PoiMarkers pins={pins} setIsOpen={setIsOpen} />
+        </Map>
+      </div>
+    </APIProvider>
+  );
+};
+
+// marker points ================================================
+
+const PoiMarkers = (props) => {
+  const map = useMap();
+  const [markers, setMarkers] = useState({});
+  const clusterer = useRef(null);
+  const handleClick = useCallback((ev) => {
+    if (!map) return;
+    if (!ev.latLng) return;
+    console.log('marker clicked: ', ev.latLng.toString());
+    map.panTo(ev.latLng);
+  });
+  // Initialize MarkerClusterer, if the map has changed
+  useEffect(() => {
+    if (!map) return;
+    if (!clusterer.current) {
+      clusterer.current = new MarkerClusterer({ map });
+    }
+  }, [map]);
+
+  // Update markers, if the markers array has changed
+  useEffect(() => {
+    clusterer.current?.clearMarkers();
+    clusterer.current?.addMarkers(Object.values(markers));
+  }, [markers]);
+
+  const setMarkerRef = (marker, key) => {
+    if (marker && markers[key]) return;
+    if (!marker && !markers[key]) return;
+
+    setMarkers((prev) => {
+      if (marker) {
+        return { ...prev, [key]: marker };
+      } else {
+        const newMarkers = { ...prev };
+        delete newMarkers[key];
+        return newMarkers;
       }
-      // mapId='da37f3254c6a6d1c'
-    >
-      {/*<PoiMarkers pois={locations} />*/}
-    </Map>
-  </APIProvider>
-);
+    });
+  };
+  console.log('🚀🚀🚀🚀 props--->> ', props);
+
+  return (
+    <>
+      {props.pins.map((pin) => (
+        <AdvancedMarker
+          key={pin.id}
+          position={{ lat: Number(pin.latitude), lng: Number(pin.longitude) }}
+          ref={(marker) => setMarkerRef(marker, pin.id)}
+          clickable={true}
+          onClick={() => {
+            handleClick();
+            props.setIsOpen(true);
+          }}
+        >
+          <Pin
+            background={'#FBBC04'}
+            glyphColor={'#000'}
+            borderColor={'#000'}
+          />
+        </AdvancedMarker>
+      ))}
+    </>
+  );
+};
 
 export default GoogleMap;

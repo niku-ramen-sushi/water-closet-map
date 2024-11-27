@@ -35,6 +35,7 @@ import { useAtom } from 'jotai';
 // import {useAtom} from "jotai/index.js";
 import axios from 'axios';
 import DisplayPosts from '../forms/DisplayPosts.jsx';
+import GoogleMap from '../maps/GoogleMap.jsx';
 
 function ToiletMap() {
   const [pins, setPins] = useAtom(pinsAtom);
@@ -145,7 +146,9 @@ function ToiletMap() {
 
       <GridItem>
         <VStack h="100%" justify="space-between">
-          <div></div>
+          <div>
+            <GoogleMap pins={pins} />
+          </div>
           <Center w="100%">
             <CreatePinForm />
           </Center>
