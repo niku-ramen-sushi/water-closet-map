@@ -38,17 +38,6 @@ const Login = () => {
     }
   };
 
-  // logout
-  const handleLogoutClick = async () => {
-    // fetch version
-    let response = await fetch(`/api/logout`);
-    const data = await response.json();
-    console.log('server response: ', data);
-    if (response.ok) {
-      navigate('/');
-    }
-  };
-
   // 認証済みの場合は、map画面へ遷移する
   useEffect(() => {
     const checkAuth = async () => {
@@ -138,8 +127,6 @@ const Login = () => {
                 </Text>
               )}
             </Center>
-
-            <Button onClick={handleLogoutClick}>ログアウト</Button>
             <Center>
               <Text fontSize="sm" color="gray.300">
                 © 2024 にくらーめんすし × katana
