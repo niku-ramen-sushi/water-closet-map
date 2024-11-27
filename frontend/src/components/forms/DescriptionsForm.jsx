@@ -43,7 +43,7 @@ const DescriptionsForm = () => {
   const [isNewPlace, setIsNewPlace] = useAtom(isNewPlaceAtom);
   // const pin = pins[selectedPinId];
   const [type, setType] = useState('');
-  const [level, setLevel] = useState('');
+  const [level, setLevel] = useState('レベルを選択');
   const [comment, setComment] = useState('');
   const setIsPinEdit = useSetAtom(isPinEditAtom);
   const latLng = useAtomValue(latLngAtom);
@@ -88,7 +88,7 @@ const DescriptionsForm = () => {
     const resData = await axios.post(url, addObj);
     console.log('postData', resData.data);
 
-    setLevel(null);
+    setLevel('レベルを選択');
     setType(null);
     setComment('');
     setTitle('');
@@ -166,6 +166,7 @@ const DescriptionsForm = () => {
             <NativeSelect
               placeholder="レベルを選択"
               defaultValue={pin.name}
+              value={level}
               onChange={(e) => {
                 setLevel(e.target.value);
               }}
