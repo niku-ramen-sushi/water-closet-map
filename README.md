@@ -36,7 +36,7 @@ npm run start
 
 ## 環境構築
 
-1. 必要な環境変数の設定(env.sampleを参考に設定してください)
+1. 必要な環境変数の設定（env.sampleを参考に設定してください）
 2. Google Maps APIキーの取得と設定
-3. データベースの準備（PostgreSQLで準備にしてください）
+3. データベースの準備（PostgreSQLで準備してください）
 
