@@ -49,6 +49,7 @@ import {
   selectedPinAtom,
   selectedTitleAtom,
 } from '../../globalState.js';
+import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useAtom } from 'jotai';
 // import {useAtom} from "jotai/index.js";
@@ -58,13 +59,24 @@ import GoogleMap from '../maps/GoogleMap.jsx';
 
 function ToiletMap() {
   const [pins, setPins] = useAtom(pinsAtom);
-
   const [isPinEdit, setIsPinEdit] = useAtom(isPinEditAtom);
   const setSelectedPin = useSetAtom(selectedPinAtom);
   const setHygieneList = useSetAtom(hygieneListAtom);
   const setSelectedTitle = useSetAtom(selectedTitleAtom);
   const setSelectedMyPin = useSetAtom(selectedMyPinAtom);
   const setIsNewCard = useSetAtom(isNewCardAtom);
+  const navigate = useNavigate();
+
+  // logout
+  const handleLogoutClick = async () => {
+    // fetch version
+    let response = await fetch(`/api/logout`);
+    const data = await response.json();
+    console.log('server response: ', data);
+    if (response.ok) {
+      navigate('/');
+    }
+  };
 
   const getAllPins = async () => {
     const resData = await axios.get('/api/all-wc-position');
@@ -233,6 +245,9 @@ function ToiletMap() {
       <GridItem>
         <CreatePinButton />
         <OverLapper isPinEdit={isPinEdit} />
+        <Center mt="md">
+          <Button onClick={handleLogoutClick}>ログアウト</Button>
+        </Center>
       </GridItem>
 
       <GridItem>
