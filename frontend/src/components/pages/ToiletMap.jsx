@@ -300,11 +300,7 @@ function ToiletMap() {
       </GridItem>
 
       <GridItem>
-        <Text size="lg">ここにGoogleマップ</Text>
-        <div>
-          isPin ; {String(isPinEdit)} / isDoAPI ; {String(isDoAPI)} / isNew ;{' '}
-          {String(isNewPlace)}
-        </div>
+        <GoogleMap pins={pins} />
       </GridItem>
     </Grid>
   );
