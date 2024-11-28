@@ -101,6 +101,7 @@ function ToiletMap() {
   };
 
   const getMyDetailData = async (id) => {
+    console.log('🚀🚀🚀🚀 path`--->> ', `/api/click-wc-data/${id}/${userId}`);
     const resData = await axios.get(`/api/click-wc-data/${id}/${userId}`); //⭐️1を変数化する
     console.log('myData:', userId, resData.data);
     if (resData.data.length !== 0) {
@@ -178,6 +179,7 @@ function ToiletMap() {
                       setDisplayDrawer(true);
                       getDetailData(pin.id);
                       getMyDetailData(pin.id);
+                      console.log('🚀🚀🚀🚀 pin.id--->> ', JSON.stringify(pin));
                       onOpen();
                       // setDisplayDrawer(true);
                       console.log('一覧クリック');

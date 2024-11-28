@@ -1,6 +1,8 @@
 import { Box, Button, Center, Input, Text, VStack } from '@yamada-ui/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSetAtom } from 'jotai';
+import { userIdAtom } from '../../globalState.js';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -8,6 +10,7 @@ const Login = () => {
   const [loginMode, setLoginMode] = useState('login');
   const [email, setEmail] = useState('');
   const navigate = useNavigate();
+  const getUserId = useSetAtom(userIdAtom);
 
   // ログイン画面 文字数下限値設定
   const isLoginButtonEnabled = username.length >= 4 && password.length >= 4;
@@ -32,6 +35,7 @@ const Login = () => {
     });
 
     const data = await response.json();
+    getUserId(data.id);
     console.log('server response: ', data);
 
     if (response.ok) {
