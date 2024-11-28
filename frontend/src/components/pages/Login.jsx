@@ -1,4 +1,3 @@
-'use client';
 import { Box, Button, Center, Input, Text, VStack } from '@yamada-ui/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -10,20 +9,20 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const navigate = useNavigate();
 
+  // ログイン画面 文字数下限値設定
   const isLoginButtonEnabled = username.length >= 4 && password.length >= 4;
   const isSignupButtonEnabled = isLoginButtonEnabled && email.length >= 4;
 
   // sing in or lon
   const handleSignupOrLoginClick = async (e) => {
-    const selectUrl =
-      e.target.textContent === '新規登録' ? '/signup' : '/login';
+    const selectUrl = e.target.textContent === '新規登録' ? 'signup' : 'login';
     const loginUser = {
       username: username,
       password: password,
       email: email,
     };
     // fetch version
-    let response = await fetch(`${selectUrl}`, {
+    let response = await fetch(`/api/${selectUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -31,21 +30,12 @@ const Login = () => {
       body: JSON.stringify(loginUser),
       credentials: 'include', // クッキーを含める
     });
+
     const data = await response.json();
     console.log('server response: ', data);
+
     if (response.ok) {
       navigate('/map');
-    }
-  };
-
-  // logout
-  const handleLogoutClick = async () => {
-    // fetch version
-    let response = await fetch(`/logout`);
-    const data = await response.json();
-    console.log('server response: ', data);
-    if (response.ok) {
-      navigate('/');
     }
   };
 
@@ -132,14 +122,12 @@ const Login = () => {
                   color="blue.700"
                   fontWeight="bold"
                   textDecoration="underline"
-                  onClick={() => setLoginMode('signup')}
+                  onClick={() => setLoginMode('login')}
                 >
                   既に登録済みの方はこちら
                 </Text>
               )}
             </Center>
-
-            <Button onClick={handleLogoutClick}>ログアウト</Button>
             <Center>
               <Text fontSize="sm" color="gray.300">
                 © 2024 にくらーめんすし × katana
