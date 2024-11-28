@@ -67,19 +67,19 @@ describe("new-pins", () => {
   });
 });
 
-describe("new-description", () => {
+describe("new & del description", () => {
   it("should return new description comment", async () => {
     const getUrl = apiURL + "/api/click-wc-data/1";
     const beforeData = await axios.get(getUrl);
     const beforeDataCount = beforeData.data.length;
-
+    const user_id = 1;
     const url = apiURL + "/api/wc-description";
     const comment = "すごくいいトイレでした。住んでもいいくらい清潔です。";
     const addObj = {
       hygiene_id: 1,
       wc_pos_id: 1,
       gender_type_id: 1,
-      user_id: 1,
+      user_id: user_id,
       comment: comment,
     };
     const resData = await axios.post(url, addObj);
@@ -90,7 +90,22 @@ describe("new-description", () => {
     const afterDataCount = afterData.data.length;
     // console.log("count", beforeDataCount, afterDataCount);
 
+    // console.log("add end--------------------");
+    // console.log(afterData);
+    const newId = afterData.data.filter((obj) => obj.user_id === user_id)[0].id;
+    // console.log("newId", newId);
+    //追加したデータを削除する
+
+    const delAdd = apiURL + `/api/wc-description/${newId}`;
+    const delData = await axios.delete(delAdd);
+    const delRes = delData.data;
+    // console.log("del--", delRes);
+
+    const afterDelData = await axios.get(getUrl);
+    const afterDelDataCount = afterDelData.data.length;
+
     expect(res[0].comment).to.equal(comment);
     expect(afterDataCount - beforeDataCount).to.equal(1);
+    expect(beforeDataCount).to.equal(afterDelDataCount);
   });
 });

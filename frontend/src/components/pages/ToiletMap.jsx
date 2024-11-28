@@ -38,19 +38,23 @@ import DescriptionsForm from '../forms/DescriptionsForm.jsx';
 import CreatePinButton from '../buttons/CreatePinButton.jsx';
 
 // Jotai関連のインポート
-import { useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import {
   hygieneListAtom,
+  isDoAPIAtom,
   isNewCardAtom,
+  isNewPlaceAtom,
   isPinEditAtom,
   pinsAtom,
   selectedMyPinAtom,
   // selectedPinIdAtom,
   selectedPinAtom,
   selectedTitleAtom,
+  userIdAtom,
 } from '../../globalState.js';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+
 import { useAtom } from 'jotai';
 // import {useAtom} from "jotai/index.js";
 import axios from 'axios';
@@ -62,9 +66,15 @@ function ToiletMap() {
   const [isPinEdit, setIsPinEdit] = useAtom(isPinEditAtom);
   const setSelectedPin = useSetAtom(selectedPinAtom);
   const setHygieneList = useSetAtom(hygieneListAtom);
-  const setSelectedTitle = useSetAtom(selectedTitleAtom);
+  const [selectedTitle, setSelectedTitle] = useAtom(selectedTitleAtom);
   const setSelectedMyPin = useSetAtom(selectedMyPinAtom);
   const setIsNewCard = useSetAtom(isNewCardAtom);
+  const isNewPlace = useAtomValue(isNewPlaceAtom);
+  const setPinEdit = useSetAtom(pinsAtom);
+  const setIsNewPlace = useSetAtom(isNewPlaceAtom);
+  const [isDoAPI, setIsDoAPI] = useAtom(isDoAPIAtom);
+  const [displayDrawer, setDisplayDrawer] = useState(false);
+  const userId = useAtomValue(userIdAtom);
   const navigate = useNavigate();
 
   // logout
@@ -91,8 +101,8 @@ function ToiletMap() {
   };
 
   const getMyDetailData = async (id) => {
-    const resData = await axios.get(`/api/click-wc-data/${id}/2`); //⭐️1を変数化する
-    console.log('myData:', resData.data);
+    const resData = await axios.get(`/api/click-wc-data/${id}/${userId}`); //⭐️1を変数化する
+    console.log('myData:', userId, resData.data);
     if (resData.data.length !== 0) {
       setIsNewCard(false);
       setSelectedMyPin(resData.data);
@@ -107,7 +117,7 @@ function ToiletMap() {
           name: '',
           title: '',
           type: '',
-          user_id: 2,
+          user_id: userId,
           wc_pos_id: null,
         },
       ]);
@@ -122,9 +132,16 @@ function ToiletMap() {
   };
 
   useEffect(() => {
+    console.log('effect-------1');
     getAllPins();
     getHygieneList();
-  }, []);
+
+    if (isDoAPI) {
+      console.log('effect-------2');
+      getDetailData(selectedTitle.id);
+      getMyDetailData(selectedTitle.id);
+    }
+  }, [isDoAPI]);
 
   function ToiletAccordion({ onOpen }) {
     return (
@@ -153,11 +170,17 @@ function ToiletMap() {
                   <Button
                     onClick={() => {
                       // setIsPinEdit(true);
-                      setSelectedTitle({ id: pin.id, title: pin.title });
+                      const obj = { id: pin.id, title: pin.title };
+                      console.log('select pin;', obj);
+                      setSelectedTitle(obj);
                       setIsPinEdit(false);
+                      setIsNewPlace(false);
+                      setDisplayDrawer(true);
                       getDetailData(pin.id);
                       getMyDetailData(pin.id);
                       onOpen();
+                      // setDisplayDrawer(true);
+                      console.log('一覧クリック');
                     }}
                   >
                     一覧
@@ -176,16 +199,14 @@ function ToiletMap() {
       <div>
         <Drawer isOpen={isOpen} onClose={onClose} size="lg">
           <DrawerHeader>トイレ詳細情報</DrawerHeader>
-
           <DrawerBody>
             <DisplayPosts />
           </DrawerBody>
-
-          <DrawerFooter>
-            <Button variant="ghost" onClick={onClose}>
-              とじる
-            </Button>
-          </DrawerFooter>
+          　{/*<DrawerFooter>*/}
+          {/*  <Button variant="ghost" onClick={onClose}>*/}
+          {/*    とじる*/}
+          {/*  </Button>*/}
+          {/*</DrawerFooter>*/}
         </Drawer>
       </div>
     );
@@ -216,17 +237,45 @@ function ToiletMap() {
     // isPinEditの値が変更されたときにダイアログを開く
     // isPinEditってなんだろう
     useEffect(() => {
+      console.log('-effect--isPinEdit--', isPinEdit);
       if (isPinEdit) {
         dialogDisclosure.onOpen();
+      } else {
+        dialogDisclosure.onClose();
       }
-    }, [isPinEdit]);
+    }, [isPinEdit]); //[isPinEdit]);
+
+    useEffect(() => {
+      setIsDoAPI(false);
+
+      if (displayDrawer) {
+        drawerDisclosure.onOpen();
+      } else {
+        drawerDisclosure.onClose();
+      }
+    }, [displayDrawer]);
+
+    // useEffect(() => {
+    //   console.log(dialogDisclosure.onClose === true);
+    //   if (!dialogDisclosure.onClose) {
+    //     setIsNewPlace(false);
+    //     setIsPinEdit(false);
+    //   }
+    // }, [dialogDisclosure.onClose]);
+
+    // useEffect(() => {
+    //   if (isPinEdit) {
+    //     dialogDisclosure.onOpen();
+    //   }
+    // }, [isPinEdit]);
 
     return (
       <>
         <ToiletAccordion onOpen={drawerDisclosure.onOpen} />
 
         <DetailDrawer
-          isOpen={drawerDisclosure.isOpen}
+          // isOpen={displayDrawer && !isPinEdit}
+          isOpen={drawerDisclosure.isOpen && !isPinEdit}
           onClose={drawerDisclosure.onClose}
         />
 
@@ -251,7 +300,11 @@ function ToiletMap() {
       </GridItem>
 
       <GridItem>
-        <GoogleMap pins={pins} />
+        <Text size="lg">ここにGoogleマップ</Text>
+        <div>
+          isPin ; {String(isPinEdit)} / isDoAPI ; {String(isDoAPI)} / isNew ;{' '}
+          {String(isNewPlace)}
+        </div>
       </GridItem>
     </Grid>
   );
