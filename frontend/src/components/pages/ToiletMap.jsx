@@ -54,7 +54,7 @@ import {
 } from '../../globalState.js';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+
 import { useAtom } from 'jotai';
 // import {useAtom} from "jotai/index.js";
 import axios from 'axios';
@@ -199,12 +199,10 @@ function ToiletMap() {
       <div>
         <Drawer isOpen={isOpen} onClose={onClose} size="lg">
           <DrawerHeader>トイレ詳細情報</DrawerHeader>
-
           <DrawerBody>
             <DisplayPosts />
           </DrawerBody>
-
-          {/*<DrawerFooter>*/}
+          　{/*<DrawerFooter>*/}
           {/*  <Button variant="ghost" onClick={onClose}>*/}
           {/*    とじる*/}
           {/*  </Button>*/}
