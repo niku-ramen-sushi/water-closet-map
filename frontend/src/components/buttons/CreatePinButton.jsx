@@ -1,11 +1,10 @@
 import { Button } from '@yamada-ui/react';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import {
   isCreatePinAtom,
   isNewPlaceAtom,
   isPinEditAtom,
 } from '../../globalState.js';
-import axios from 'axios';
 
 const CreatePinButton = () => {
   const setIsCreatePin = useSetAtom(isCreatePinAtom);

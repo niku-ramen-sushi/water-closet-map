@@ -4,10 +4,8 @@ import {
   Grid,
   GridItem,
   HStack,
-  VStack,
   Center,
   useDisclosure,
-  Text,
 } from '@yamada-ui/react';
 import {
   Accordion,
@@ -15,22 +13,8 @@ import {
   AccordionLabel,
   AccordionPanel,
 } from '@yamada-ui/react';
-import {
-  Drawer,
-  DrawerOverlay,
-  DrawerCloseButton,
-  DrawerHeader,
-  DrawerBody,
-  DrawerFooter,
-} from '@yamada-ui/react';
-import {
-  Dialog,
-  DialogOverlay,
-  DialogCloseButton,
-  DialogHeader,
-  DialogBody,
-  DialogFooter,
-} from '@yamada-ui/react';
+import { Drawer, DrawerHeader, DrawerBody } from '@yamada-ui/react';
+import { Dialog } from '@yamada-ui/react';
 
 // 既存コンポーネントのインポート
 import DescriptionsForm from '../forms/DescriptionsForm.jsx';
@@ -69,8 +53,8 @@ function ToiletMap() {
   const [selectedTitle, setSelectedTitle] = useAtom(selectedTitleAtom);
   const setSelectedMyPin = useSetAtom(selectedMyPinAtom);
   const setIsNewCard = useSetAtom(isNewCardAtom);
-  const isNewPlace = useAtomValue(isNewPlaceAtom);
-  const setPinEdit = useSetAtom(pinsAtom);
+  // const isNewPlace = useAtomValue(isNewPlaceAtom);
+  // const setPinEdit = useSetAtom(pinsAtom);
   const setIsNewPlace = useSetAtom(isNewPlaceAtom);
   const [isDoAPI, setIsDoAPI] = useAtom(isDoAPIAtom);
   const [displayDrawer, setDisplayDrawer] = useState(false);
@@ -204,7 +188,7 @@ function ToiletMap() {
           <DrawerBody>
             <DisplayPosts />
           </DrawerBody>
-          　{/*<DrawerFooter>*/}
+          {/*<DrawerFooter>*/}
           {/*  <Button variant="ghost" onClick={onClose}>*/}
           {/*    とじる*/}
           {/*  </Button>*/}

@@ -12,7 +12,7 @@ import {
 } from '@vis.gl/react-google-maps';
 
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { latLngAtom } from '../../globalState.js';
 
 const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
@@ -71,12 +71,15 @@ const PoiMarkers = (props) => {
   const map = useMap();
   const [markers, setMarkers] = useState({});
   const clusterer = useRef(null);
-  const handleClick = useCallback((ev) => {
-    if (!map) return;
-    if (!ev.latLng) return;
-    console.log('marker clicked: ', ev.latLng.toString());
-    map.panTo(ev.latLng);
-  });
+  const handleClick = useCallback(
+    (ev) => {
+      if (!map) return;
+      if (!ev.latLng) return;
+      console.log('marker clicked: ', ev.latLng.toString());
+      map.panTo(ev.latLng);
+    },
+    [map]
+  );
   // Initialize MarkerClusterer, if the map has changed
   useEffect(() => {
     if (!map) return;
@@ -110,22 +113,25 @@ const PoiMarkers = (props) => {
   return (
     <>
       {props.pins.map((pin) => (
-        <AdvancedMarker
-          key={pin.id}
-          position={{ lat: Number(pin.latitude), lng: Number(pin.longitude) }}
-          ref={(marker) => setMarkerRef(marker, pin.id)}
-          clickable={true}
-          onClick={() => {
-            handleClick();
-            props.setIsOpen(true);
-          }}
-        >
-          <Pin
-            background={'#FBBC04'}
-            glyphColor={'#000'}
-            borderColor={'#000'}
-          />
-        </AdvancedMarker>
+        <div key={pin.id}>
+          <div>{console.log(JSON.stringify(pin))}</div>
+          <AdvancedMarker
+            key={pin.id}
+            position={{ lat: Number(pin.latitude), lng: Number(pin.longitude) }}
+            ref={(marker) => setMarkerRef(marker, pin.id)}
+            clickable={true}
+            onClick={() => {
+              handleClick();
+              props.setIsOpen(true);
+            }}
+          >
+            <Pin
+              background={'#FBBC04'}
+              glyphColor={'#000'}
+              borderColor={'#000'}
+            />
+          </AdvancedMarker>
+        </div>
       ))}
     </>
   );
